@@ -232,4 +232,4 @@ Applique ce commit précis dans ta branche courante, sans merger tout le reste.
 git log --oneline --graph --all
 ```
 
-<!-- Made by Leo Cottaz -->
+Merci Leo Cottaz !

@@ -1,0 +1,68 @@
+1. Commands
+
+2.1 LOGIN
+
+Description:
+Authenticate a user and return its UID.
+
+Request:
+LOGIN <username>
+
+Response:
+200 <uid>
+
+Errors:
+500 Internal server error
+
+--------------------------------------------------
+
+2.2 LOGOUT
+
+Description:
+Logout the current user.
+
+Request:
+LOGOUT
+
+Response:
+200 <uid>
+
+Errors:
+300 User not logged in
+500 Internal server error
+
+--------------------------------------------------
+
+2.3 USERS
+
+Description:
+List all users.
+
+Request:
+USERS
+
+Response:
+200 [
+  <username1> <uid1>,
+  <username2> <uid2>
+]
+
+Errors:
+500 Internal server error
+
+--------------------------------------------------
+
+2.4 USER
+
+Description:
+Get information about a specific user.
+
+Request:
+USER <username>
+
+Response:
+200 <username> <uid>
+
+Errors:
+400 User not found
+500 Internal server error
