@@ -18,148 +18,135 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void cleanup_client_state(client_state_t *client_state)
-{
-    if (client_state->data_fd > 0) {
-        close(client_state->data_fd);
-        client_state->data_fd = 0;
-    }
-    free(client_state->cwd);
-    free(client_state->output_buffer);
-    free(client_state->user_uid);
-    memset(client_state, 0, sizeof(client_state_t));
+static void cleanup_client_state(client_state_t *client_state) {
+  free(client_state->output_buffer);
+  free(client_state->user_uid);
+  memset(client_state, 0, sizeof(client_state_t));
 }
 
 // return 1 if there is a pending connection, 0 if not, and -1 on error
-int has_pending_connection(int fd, int timeout_ms)
-{
-    struct pollfd pfd;
+int has_pending_connection(int fd, int timeout_ms) {
+  struct pollfd pfd;
 
-    pfd.fd = fd;
-    pfd.events = POLLIN;
-    if (poll(&pfd, 1, timeout_ms) == -1) {
-        fprintf(stderr, "Erreur: Impossible d'effectuer le poll: %s\n",
+  pfd.fd = fd;
+  pfd.events = POLLIN;
+  if (poll(&pfd, 1, timeout_ms) == -1) {
+    fprintf(stderr, "Erreur: Impossible d'effectuer le poll: %s\n",
             strerror(errno));
-        return -1;
-    }
-    if (pfd.revents & POLLIN)
-        return 1;
-    return 0;
+    return -1;
+  }
+  if (pfd.revents & POLLIN)
+    return 1;
+  return 0;
 }
 
 static int locate_available_socket(int fd, client_state_t *clientFds,
-    int *client_fd)
-{
-    struct sockaddr_in client;
-    socklen_t len = sizeof(client);
-    int idx = 0;
+                                   int *client_fd) {
+  struct sockaddr_in client;
+  socklen_t len = sizeof(client);
+  int idx = 0;
 
-    *client_fd = accept(fd, (struct sockaddr *)&client, &len);
-    if (*client_fd == -1) {
-        fprintf(stderr,
-            "Erreur: Impossible d'accepter la connexion client: %s\n",
+  *client_fd = accept(fd, (struct sockaddr *)&client, &len);
+  if (*client_fd == -1) {
+    fprintf(stderr, "Erreur: Impossible d'accepter la connexion client: %s\n",
             strerror(errno));
-        return -1;
-    }
-    while (idx < MAX_SOCKET && clientFds[idx].in_use)
-        idx++;
-    if (idx == MAX_SOCKET) {
-        fprintf(stderr, "Erreur: Nombre maximum de sockets atteint.\n");
-        close(*client_fd);
-        return -1;
-    }
-    return idx;
+    return -1;
+  }
+  while (idx < MAX_SOCKET && clientFds[idx].in_use)
+    idx++;
+  if (idx == MAX_SOCKET) {
+    fprintf(stderr, "Erreur: Nombre maximum de sockets atteint.\n");
+    close(*client_fd);
+    return -1;
+  }
+  return idx;
 }
 
 static int handle_pending_client_connection(int fd, client_state_t *clientFds,
-    struct pollfd *poll_fds, int has_client)
-{
-    int idx;
-    int client_fd;
+                                            struct pollfd *poll_fds,
+                                            int has_client) {
+  int idx;
+  int client_fd;
 
-    if (has_client == -1)
-        return -1;
-    if (has_client == 1) {
-        idx = locate_available_socket(fd, clientFds, &client_fd);
-        if (idx == -1)
-            return -1;
-        send_simple_response(client_fd, 220);
-        clientFds[idx].in_use = true;
-        clientFds[idx].data_fd = 0;
-        poll_fds[idx].fd = client_fd;
-        poll_fds[idx].events = POLLIN;
-    }
-    return has_pending_connection(fd, 0);
+  if (has_client == -1)
+    return -1;
+  if (has_client == 1) {
+    idx = locate_available_socket(fd, clientFds, &client_fd);
+    if (idx == -1)
+      return -1;
+    send_simple_response(client_fd, 220);
+    clientFds[idx].in_use = true;
+    poll_fds[idx].fd = client_fd;
+    poll_fds[idx].events = POLLIN;
+  }
+  return has_pending_connection(fd, 0);
 }
 
 int accept_new_client(int fd, client_state_t *clientFds,
-    struct pollfd *poll_fds)
-{
-    int has_client;
+                      struct pollfd *poll_fds) {
+  int has_client;
 
-    has_client = has_pending_connection(fd, 0);
-    while (has_client == 1) {
-        has_client = handle_pending_client_connection(fd,
-            clientFds, poll_fds, has_client);
-        if (has_client == -1)
-            return -1;
-    }
-    return 0;
+  has_client = has_pending_connection(fd, 0);
+  while (has_client == 1) {
+    has_client =
+        handle_pending_client_connection(fd, clientFds, poll_fds, has_client);
+    if (has_client == -1)
+      return -1;
+  }
+  return 0;
 }
 
 // buffer et bytes_read sont temporaires
 static void process_received_data(client_state_t *client, const char *buffer,
-    ssize_t bytes_read, int client_fd, servor_t *servor)
-{
-    char *instruction = NULL;
+                                  ssize_t bytes_read, int client_fd,
+                                  teams_t *servor) {
+  char *instruction = NULL;
 
-    instruction = malloc((bytes_read + 1) * sizeof(char));
-    if (instruction == NULL) {
-        fprintf(stderr, "Erreur: Impossible d'allouer la mémoire.\n");
-        return;
-    }
-    strncpy(instruction, buffer, bytes_read);
-    instruction[bytes_read] = '\0';
-    bufferise_client_operations(servor, client, instruction, client_fd);
-    free(instruction);
+  instruction = malloc((bytes_read + 1) * sizeof(char));
+  if (instruction == NULL) {
+    fprintf(stderr, "Erreur: Impossible d'allouer la mémoire.\n");
+    return;
+  }
+  strncpy(instruction, buffer, bytes_read);
+  instruction[bytes_read] = '\0';
+  bufferise_client_operations(servor, client, instruction, client_fd);
+  free(instruction);
 }
 
 static int process_event(client_state_t *clientFds, struct pollfd *poll_fds,
-    size_t index, char *buffer, servor_t *servor)
-{
-    ssize_t bytes_read;
+                         size_t index, char *buffer, teams_t *servor) {
+  ssize_t bytes_read;
 
-    bytes_read = read(poll_fds[index].fd, buffer, sizeof(char) * 1024);
-    if (bytes_read > 0) {
-        process_received_data(&clientFds[index], buffer, bytes_read,
-            poll_fds[index].fd, servor);
-        return 0;
-    }
-    if (bytes_read == 0) {
-        clientFds[index].in_use = false;
-        return 0;
-    }
-    fprintf(stderr, "Erreur: Impossible de lire les données du client: %s\n",
-        strerror(errno));
-    close(poll_fds[index].fd);
-    return -1;
+  bytes_read = read(poll_fds[index].fd, buffer, sizeof(char) * 1024);
+  if (bytes_read > 0) {
+    process_received_data(&clientFds[index], buffer, bytes_read,
+                          poll_fds[index].fd, servor);
+    return 0;
+  }
+  if (bytes_read == 0) {
+    clientFds[index].in_use = false;
+    return 0;
+  }
+  fprintf(stderr, "Erreur: Impossible de lire les données du client: %s\n",
+          strerror(errno));
+  close(poll_fds[index].fd);
+  return -1;
 }
 
-int handle_client_events(servor_t *servor, client_state_t *clientFds,
-    struct pollfd *poll_fds)
-{
-    char buffer[1024];
-    int process_status;
+int handle_client_events(teams_t *team, client_state_t *clientFds,
+                         struct pollfd *poll_fds) {
+  char buffer[1024];
+  int process_status;
 
-    for (size_t i = 0; i < MAX_SOCKET; i++) {
-        if (!clientFds[i].in_use || !(poll_fds[i].revents & POLLIN))
-            continue;
-        process_status = process_event(clientFds, poll_fds, i, buffer, servor);
-        if (clientFds[i].in_use == false || process_status == -1) {
-            close(poll_fds[i].fd);
-            memset(&poll_fds[i], 0, sizeof(struct pollfd));
-            cleanup_client_state(&clientFds[i]);
-        }
+  for (size_t i = 0; i < MAX_SOCKET; i++) {
+    if (!clientFds[i].in_use || !(poll_fds[i].revents & POLLIN))
+      continue;
+    process_status = process_event(clientFds, poll_fds, i, buffer, team);
+    if (clientFds[i].in_use == false || process_status == -1) {
+      close(poll_fds[i].fd);
+      memset(&poll_fds[i], 0, sizeof(struct pollfd));
+      cleanup_client_state(&clientFds[i]);
     }
-    return 0;
+  }
+  return 0;
 }

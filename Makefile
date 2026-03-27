@@ -16,7 +16,6 @@ SRCC = src/bufferiser.c \
 	src/utils.c \
 	src/user_function.c \
 	$(wildcard src/operation/*.c) \
-	$(wildcard src/data_socket/*.c) \
 	$(wildcard src/control_socket/*.c) \
 
 SRCTEST = $(wildcard tests/test_*.c)
