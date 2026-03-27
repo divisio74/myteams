@@ -43,7 +43,7 @@ int send_simple_response(int client_fd, int code)
     return 0;
 }
 
-int call_operation(servor_t *servor, client_state_t *client_state,
+int call_operation(teams_t *servor, client_state_t *client_state,
     char *operation, char *args, int client_fd)
 {
     if (!operation)

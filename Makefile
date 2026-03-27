@@ -64,21 +64,6 @@ fclean: clean
 
 re: fclean all
 
-test: $(TESTNAME)
-	./$(TESTNAME)
-
-test-client: $(CLIENT_TEST_NAME)
-
-test-cli: $(NAME) $(CLIENT_TEST_NAME)
-	bash $(CLI_TEST_SCRIPT) ./$(NAME) ./$(CLIENT_TEST_NAME)
-
-$(TESTNAME): $(OBJTEST) $(OBJC_TEST)
-	$(CC) -o $(TESTNAME) $(OBJTEST) $(OBJC_TEST) $(CFLAGS) $(CPPFLAGS) \
-	-lcriterion
-
-$(CLIENT_TEST_NAME): $(CLIENT_TEST_SRC)
-	$(CC) -o $(CLIENT_TEST_NAME) $(CLIENT_TEST_SRC) $(CFLAGS) $(CPPFLAGS)
-
 %.o: %.cpp
 	$(CCX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS)
 
