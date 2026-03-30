@@ -3,4 +3,4 @@ coding-style-reports.log
 .vscode
 __pycache__
 myteams_server
-test/
+tests/

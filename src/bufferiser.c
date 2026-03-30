@@ -15,22 +15,22 @@ void split_with_space(char *input, char **operant, char **parameters) {
   split_with_separator(input, operant, parameters, ' ');
 }
 
-static void operation_execution(teams_t *server, client_t *client,
+static void operation_execution(teams_t *teams, client_t *client,
                                 char *current_operation) {
   char *operant = NULL;
   char *parameters = NULL;
 
   split_with_space(current_operation, &operant, &parameters);
-  call_operation(server, client, operant, parameters);
+  call_operation(teams, client, operant, parameters);
 }
 
-static void algo_loop(teams_t *server, client_t *client, char *args,
+static void algo_loop(teams_t *teams, client_t *client, char *args,
                       char *current_operation) {
   char current_char[2];
 
   for (size_t i = 0; args[i] != '\0'; i++) {
     if (args[i] == '\r' && args[i + 1] != '\0' && args[i + 1] == '\n') {
-      operation_execution(server, client, current_operation);
+      operation_execution(teams, client, current_operation);
       current_operation[0] = '\0';
       i += 1;
       continue;
@@ -42,7 +42,7 @@ static void algo_loop(teams_t *server, client_t *client, char *args,
   }
 }
 
-void bufferise_client_operations(teams_t *server, client_t *client,
+void bufferise_client_operations(teams_t *teams, client_t *client,
                                  char *args) {
   char *current_operation = NULL;
 
@@ -54,7 +54,7 @@ void bufferise_client_operations(teams_t *server, client_t *client,
   current_operation[0] = '\0';
   if (client->output_buffer != NULL && client->output_buffer[0] != '\0')
     strcat(current_operation, client->output_buffer);
-  algo_loop(server, client, args, current_operation);
+  algo_loop(teams, client, args, current_operation);
   if (current_operation[0] != '\0') {
     free(client->output_buffer);
     client->output_buffer = strdup(current_operation);

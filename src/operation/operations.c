@@ -43,14 +43,14 @@ int send_simple_response(int client_fd, int code)
     return 0;
 }
 
-int call_operation(teams_t *server, client_t *client,
+int call_operation(teams_t *teams, client_t *client,
     char *operation, char *args)
 {
     if (!operation)
         return send_simple_response(client->client_fd, 500);
     for (int i = 0; i < 14; i++) {
         if (strcmp(operation_functions[i].command_name, operation) == 0)
-            return operation_functions[i].operation(server, client,
+            return operation_functions[i].operation(teams, client,
                 args);
     }
     return send_simple_response(client->client_fd, 500);

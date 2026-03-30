@@ -99,7 +99,7 @@ int accept_new_client(int fd, client_t *clientFds,
 
 // buffer et bytes_read sont temporaires
 static void process_received_data(client_t *client, const char *buffer,
-                                  ssize_t bytes_read, teams_t *server) {
+                                  ssize_t bytes_read, teams_t *teams) {
   char *instruction = NULL;
 
   instruction = malloc((bytes_read + 1) * sizeof(char));
@@ -109,17 +109,17 @@ static void process_received_data(client_t *client, const char *buffer,
   }
   strncpy(instruction, buffer, bytes_read);
   instruction[bytes_read] = '\0';
-  bufferise_client_operations(server, client, instruction);
+  bufferise_client_operations(teams, client, instruction);
   free(instruction);
 }
 
 static int process_event(client_t *clientFds, struct pollfd *poll_fds,
-                         size_t index, char *buffer, teams_t *server) {
+                         size_t index, char *buffer, teams_t *teams) {
   ssize_t bytes_read;
 
   bytes_read = read(clientFds[index].client_fd, buffer, sizeof(char) * 1024);
   if (bytes_read > 0) {
-    process_received_data(&clientFds[index], buffer, bytes_read, server);
+    process_received_data(&clientFds[index], buffer, bytes_read, teams);
     return 0;
   }
   if (bytes_read == 0) {
@@ -132,7 +132,7 @@ static int process_event(client_t *clientFds, struct pollfd *poll_fds,
   return -1;
 }
 
-int handle_client_events(teams_t *team, client_t *clientFds,
+int handle_client_events(teams_t *teams, client_t *clientFds,
                          struct pollfd *poll_fds) {
   char buffer[1024];
   int process_status;
@@ -140,7 +140,7 @@ int handle_client_events(teams_t *team, client_t *clientFds,
   for (size_t i = 0; i < MAX_SOCKET; i++) {
     if (!clientFds[i].in_use || !(poll_fds[i].revents & POLLIN))
       continue;
-    process_status = process_event(clientFds, poll_fds, i, buffer, team);
+    process_status = process_event(clientFds, poll_fds, i, buffer, teams);
     if (clientFds[i].in_use == false || process_status == -1) {
       close(poll_fds[i].fd);
       memset(&poll_fds[i], 0, sizeof(struct pollfd));

@@ -13,7 +13,7 @@
 
 int accept_new_client(int fd, client_t *clientFds,
                       struct pollfd *poll_fds);
-int handle_client_events(teams_t *server, client_t *clientFds,
+int handle_client_events(teams_t *teams, client_t *clientFds,
                          struct pollfd *poll_fds);
 int has_pending_connection(int fd, int timeout_ms);
 
