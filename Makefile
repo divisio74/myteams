@@ -16,7 +16,6 @@ SRCC = src/bufferiser.c \
 	src/utils.c \
 	src/user_function.c \
 	$(wildcard src/operation/*.c) \
-	$(wildcard src/data_socket/*.c) \
 	$(wildcard src/control_socket/*.c) \
 
 SRCTEST = $(wildcard tests/test_*.c)
@@ -64,21 +63,6 @@ fclean: clean
 	rm -f $(NAME) $(TESTNAME) $(CLIENT_TEST_NAME)
 
 re: fclean all
-
-test: $(TESTNAME)
-	./$(TESTNAME)
-
-test-client: $(CLIENT_TEST_NAME)
-
-test-cli: $(NAME) $(CLIENT_TEST_NAME)
-	bash $(CLI_TEST_SCRIPT) ./$(NAME) ./$(CLIENT_TEST_NAME)
-
-$(TESTNAME): $(OBJTEST) $(OBJC_TEST)
-	$(CC) -o $(TESTNAME) $(OBJTEST) $(OBJC_TEST) $(CFLAGS) $(CPPFLAGS) \
-	-lcriterion
-
-$(CLIENT_TEST_NAME): $(CLIENT_TEST_SRC)
-	$(CC) -o $(CLIENT_TEST_NAME) $(CLIENT_TEST_SRC) $(CFLAGS) $(CPPFLAGS)
 
 %.o: %.cpp
 	$(CCX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS)

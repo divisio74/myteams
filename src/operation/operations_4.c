@@ -7,42 +7,30 @@
 
 #include "operations_2.h"
 
-int cmd_use(servor_t *servor, client_state_t *client_state, char *args,
-    int client_fd)
-{
-    (void)servor;
-    (void)client_state;
-    (void)args;
-    (void)client_fd;
-    return 0;
+int cmd_use(teams_t *servor, client_t *client, char *args) {
+  (void)servor;
+  (void)client;
+  (void)args;
+  return 0;
 }
 
-int cmd_create(servor_t *servor, client_state_t *client_state, char *args,
-    int client_fd)
-{
-    (void)servor;
-    (void)client_state;
-    (void)args;
-    (void)client_fd;
-    return 0;
+int cmd_create(teams_t *servor, client_t *client, char *args) {
+  (void)servor;
+  (void)client;
+  (void)args;
+  return 0;
 }
 
-int cmd_list(servor_t *servor, client_state_t *client_state, char *args,
-    int client_fd)
-{
-    (void)servor;
-    (void)client_state;
-    (void)args;
-    (void)client_fd;
-    return 0;
+int cmd_list(teams_t *servor, client_t *client, char *args) {
+  (void)servor;
+  (void)client;
+  (void)args;
+  return 0;
 }
 
-int cmd_info(servor_t *servor, client_state_t *client_state, char *args,
-    int client_fd)
-{
-    (void)servor;
-    (void)client_state;
-    (void)args;
-    (void)client_fd;
-    return 0;
+int cmd_info(teams_t *servor, client_t *client, char *args) {
+  (void)servor;
+  (void)client;
+  (void)args;
+  return 0;
 }

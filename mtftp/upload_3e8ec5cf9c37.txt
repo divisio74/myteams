@@ -1,3 +1,0 @@
-RFC959 PASV STOR test
-time=1773403416
-nonce=240703

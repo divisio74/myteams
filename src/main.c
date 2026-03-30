@@ -19,7 +19,7 @@
 
 static const char HELP_MSG[] = "USAGE: ./myteams_server port\n";
 
-static void free_space(int fd, client_state_t *clientFds,
+static void free_space(int fd, client_t *clientFds,
                        struct pollfd *poll_fds) {
   if (fd >= 0)
     close(fd);
@@ -33,8 +33,8 @@ static int parse_command(char *port, int *port_buffer) {
   return 0;
 }
 
-static int main_boucle(int fd, client_state_t *clientFds,
-                       struct pollfd *poll_fds, servor_t *servor) {
+static int main_boucle(int fd, client_t *clientFds,
+                       struct pollfd *poll_fds, teams_t *servor) {
   if (accept_new_client(fd, clientFds, poll_fds) == -1)
     return -1;
   if (poll(poll_fds, MAX_SOCKET, 0) == -1) {
@@ -49,8 +49,8 @@ static int main_boucle(int fd, client_state_t *clientFds,
 
 static int run_server(int port) {
   int fd;
-  servor_t servor = {0};
-  client_state_t *clientFds = calloc(MAX_SOCKET, sizeof(client_state_t));
+  teams_t servor = {0};
+  client_t *clientFds = calloc(MAX_SOCKET, sizeof(client_t));
   struct pollfd *poll_fds = calloc(MAX_SOCKET, sizeof(struct pollfd));
 
   servor.users = instantiate_linked_list();

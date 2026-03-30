@@ -20,7 +20,8 @@ Avant de toucher quoi que ce soit, tu crées une branche dédiée :
 git switch -c feat/nom-de-la-fonctionnalité
 ```
 
-**ATTENTION : La branche créée partira de la branche à laquelle vous êtes actuellement, il est donc généralement conseillé de partir de `main` (donc la commande est à faire sur la branche `main`)**
+**ATTENTION : La branche créée partira de la branche à laquelle vous êtes actuellement, il est donc généralement conseillé de partir de `main` (donc la commande est à faire sur la branche `main`)**# main est maintenant en retard, ta branche a l'avance
+
 
 `-c` signifie *create*. La branche est créée à partir du commit sur lequel tu te trouvais (généralement la tête de `main`). Tu y es basculé immédiatement.
 
