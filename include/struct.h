@@ -48,26 +48,33 @@ typedef struct teams_s {
   linked_list_t *users;
 } teams_t;
 
-int cmd_help(teams_t *servor, client_t *client, char *args);
-int cmd_login(teams_t *servor, client_t *client, char *args);
-int cmd_logout(teams_t *servor, client_t *client, char *args);
-int cmd_users(teams_t *servor, client_t *client, char *args);
-int cmd_user(teams_t *servor, client_t *client, char *args);
-int cmd_send(teams_t *servor, client_t *client, char *args);
-int cmd_messages(teams_t *servor, client_t *client, char *args);
-int cmd_subscribe(teams_t *servor, client_t *client, char *args);
-int cmd_subscribed(teams_t *servor, client_t *client, char *args);
-int cmd_unsubscribe(teams_t *servor, client_t *client,
+typedef struct server_s {
+  client_t *client_fds;
+  struct pollfd *poll_fds;
+  void *handle;
+  teams_t teams;
+} server_t;
+
+int cmd_help(teams_t *server, client_t *client, char *args);
+int cmd_login(teams_t *server, client_t *client, char *args);
+int cmd_logout(teams_t *server, client_t *client, char *args);
+int cmd_users(teams_t *server, client_t *client, char *args);
+int cmd_user(teams_t *server, client_t *client, char *args);
+int cmd_send(teams_t *server, client_t *client, char *args);
+int cmd_messages(teams_t *server, client_t *client, char *args);
+int cmd_subscribe(teams_t *server, client_t *client, char *args);
+int cmd_subscribed(teams_t *server, client_t *client, char *args);
+int cmd_unsubscribe(teams_t *server, client_t *client,
                     char *args);
-int cmd_use(teams_t *servor, client_t *client, char *args);
-int cmd_create(teams_t *servor, client_t *client, char *args);
-int cmd_list(teams_t *servor, client_t *client, char *args);
-int cmd_info(teams_t *servor, client_t *client, char *args);
+int cmd_use(teams_t *server, client_t *client, char *args);
+int cmd_create(teams_t *server, client_t *client, char *args);
+int cmd_list(teams_t *server, client_t *client, char *args);
+int cmd_info(teams_t *server, client_t *client, char *args);
 
 extern const operation_t operation_functions[14];
 extern const response_code_t response_dispatch_table[];
 
-int call_operation(teams_t *servor, client_t *client,
+int call_operation(teams_t *server, client_t *client,
                    char *operation, char *args);
 char *call_help_function(char *operation);
 char *call_server_response(int code);

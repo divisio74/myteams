@@ -66,3 +66,13 @@ user_t *init_user(const char *name) {
   }
   return user;
 }
+
+void free_user(void *data) {
+  user_t *user = data;
+
+  if (!user)
+    return;
+  free(user->name);
+  free(user->uid);
+  free(user);
+}

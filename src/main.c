@@ -6,8 +6,8 @@
 */
 
 #include "handling_connection.h"
-#include "mylistl.h"
 #include "operations_2.h"
+#include "server_function.h"
 #include "socket.h"
 #include "struct.h"
 #include <errno.h>
@@ -18,14 +18,7 @@
 #include <unistd.h>
 
 static const char HELP_MSG[] = "USAGE: ./myteams_server port\n";
-
-static void free_space(int fd, client_t *clientFds,
-                       struct pollfd *poll_fds) {
-  if (fd >= 0)
-    close(fd);
-  free(clientFds);
-  free(poll_fds);
-}
+static const char LIB_PATH[] = "lib/libmyteams.so";
 
 static int parse_command(char *port, int *port_buffer) {
   if (parse_server_port(port, port_buffer) == -1)
@@ -33,48 +26,40 @@ static int parse_command(char *port, int *port_buffer) {
   return 0;
 }
 
-static int main_boucle(int fd, client_t *clientFds,
-                       struct pollfd *poll_fds, teams_t *servor) {
-  if (accept_new_client(fd, clientFds, poll_fds) == -1)
+static int main_boucle(int fd, server_t *server) {
+  if (accept_new_client(fd, server->client_fds, server->poll_fds) == -1)
     return -1;
-  if (poll(poll_fds, MAX_SOCKET, 0) == -1) {
+  if (poll(server->poll_fds, MAX_SOCKET, 0) == -1) {
     fprintf(stderr, "Erreur: Impossible d'effectuer le poll: %s\n",
             strerror(errno));
     return -1;
   }
-  if (handle_client_events(servor, clientFds, poll_fds) == -1)
+  if (handle_client_events(&server->teams, server->client_fds,
+                           server->poll_fds) == -1)
     return -1;
   return 0;
 }
 
 static int run_server(int port) {
-  int fd;
-  teams_t servor = {0};
-  client_t *clientFds = calloc(MAX_SOCKET, sizeof(client_t));
-  struct pollfd *poll_fds = calloc(MAX_SOCKET, sizeof(struct pollfd));
+  int fd = -1;
+  server_t server;
 
-  servor.users = instantiate_linked_list();
-  if (servor.users == NULL) {
-    free(clientFds);
-    free(poll_fds);
+  if (server_init(&server, (char *)LIB_PATH) == -1) {
+    server_free(&server);
     return 84;
   }
   fd = socket_initiation(port);
   if (fd == -1) {
-    free(servor.users);
-    free(clientFds);
-    free(poll_fds);
+    server_free(&server);
     return 84;
   }
   while (1) {
-    if (main_boucle(fd, clientFds, poll_fds, &servor) == -1) {
-      free(servor.users);
-      free_space(fd, clientFds, poll_fds);
-      return -1;
+    if (main_boucle(fd, &server) == -1) {
+      break;
     }
   }
-  free(servor.users);
-  free_space(fd, clientFds, poll_fds);
+  close(fd);
+  server_free(&server);
   return 0;
 }
 

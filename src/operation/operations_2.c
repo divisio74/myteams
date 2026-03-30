@@ -12,26 +12,26 @@
 #include <string.h>
 #include <unistd.h>
 
-int cmd_help(teams_t *servor, client_t *client, char *args) {
-  (void)servor;
+int cmd_help(teams_t *server, client_t *client, char *args) {
+  (void)server;
   (void)client;
   (void)args;
   return 0;
 }
 
-int cmd_login(teams_t *servor, client_t *client, char *args) {
+int cmd_login(teams_t *server, client_t *client, char *args) {
   user_t *user = NULL;
 
-  if (!args || !*args)
+  if (!args)
     return send_simple_response(client->client_fd, 501);
-  user = my_find_node(servor->users, args, compare_user_name);
+  user = my_find_node(server->users, args, compare_user_name);
   if (!user) {
     user = init_user(args);
     if (!user) {
       fprintf(stderr, "Error: Failed to initialize user\n");
       return -1;
     }
-    add_node(servor->users, user);
+    add_node(server->users, user);
   }
   free(client->user_uid);
   client->user_uid = NULL;
@@ -41,20 +41,20 @@ int cmd_login(teams_t *servor, client_t *client, char *args) {
   return 0;
 }
 
-int cmd_logout(teams_t *servor, client_t *client, char *args) {
-  (void)servor;
+int cmd_logout(teams_t *server, client_t *client, char *args) {
+  (void)server;
   (void)args;
   free(client->user_uid);
   client->user_uid = NULL;
   return 0;
 }
 
-int cmd_users(teams_t *servor, client_t *client, char *args) {
+int cmd_users(teams_t *server, client_t *client, char *args) {
   user_t *user = NULL;
 
   (void)client;
   (void)args;
-  for (linked_list_t *node = servor->users; node; node = node->next) {
+  for (linked_list_t *node = server->users; node; node = node->next) {
     user = node->data;
     if (!user || !user->uid || !user->name)
       continue;
@@ -63,13 +63,13 @@ int cmd_users(teams_t *servor, client_t *client, char *args) {
   return 0;
 }
 
-int cmd_user(teams_t *servor, client_t *client, char *args) {
+int cmd_user(teams_t *server, client_t *client, char *args) {
   user_t *user = NULL;
 
   (void)client;
   if (!args || !*args)
     return 0;
-  user = my_find_node(servor->users, args, compare_user_uid);
+  user = my_find_node(server->users, args, compare_user_uid);
   if (!user)
     return 0;
   printf("%s %s\n", user->uid, user->name);

@@ -1,4 +1,14 @@
-1. Commands
+1. Server welcome
+
+Description:
+When the server accepts a new client connection, it sends a welcome response.
+
+Response:
+220 Service ready for new user
+
+--------------------------------------------------
+
+2. Commands
 
 2.1 LOGIN
 

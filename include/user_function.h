@@ -13,5 +13,6 @@
 int compare_user_uid(void *user_data, void *uid_data);
 int compare_user_name(void *user_data, void *name_data);
 user_t *init_user(const char *name);
+void free_user(void *data);
 
 #endif /* USER_FUNCTION_H */

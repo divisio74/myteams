@@ -99,7 +99,7 @@ int accept_new_client(int fd, client_t *clientFds,
 
 // buffer et bytes_read sont temporaires
 static void process_received_data(client_t *client, const char *buffer,
-                                  ssize_t bytes_read, teams_t *servor) {
+                                  ssize_t bytes_read, teams_t *server) {
   char *instruction = NULL;
 
   instruction = malloc((bytes_read + 1) * sizeof(char));
@@ -109,17 +109,17 @@ static void process_received_data(client_t *client, const char *buffer,
   }
   strncpy(instruction, buffer, bytes_read);
   instruction[bytes_read] = '\0';
-  bufferise_client_operations(servor, client, instruction);
+  bufferise_client_operations(server, client, instruction);
   free(instruction);
 }
 
 static int process_event(client_t *clientFds, struct pollfd *poll_fds,
-                         size_t index, char *buffer, teams_t *servor) {
+                         size_t index, char *buffer, teams_t *server) {
   ssize_t bytes_read;
 
   bytes_read = read(clientFds[index].client_fd, buffer, sizeof(char) * 1024);
   if (bytes_read > 0) {
-    process_received_data(&clientFds[index], buffer, bytes_read, servor);
+    process_received_data(&clientFds[index], buffer, bytes_read, server);
     return 0;
   }
   if (bytes_read == 0) {

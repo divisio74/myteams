@@ -7,29 +7,29 @@
 
 #include "operations_2.h"
 
-int cmd_use(teams_t *servor, client_t *client, char *args) {
-  (void)servor;
+int cmd_use(teams_t *server, client_t *client, char *args) {
+  (void)server;
   (void)client;
   (void)args;
   return 0;
 }
 
-int cmd_create(teams_t *servor, client_t *client, char *args) {
-  (void)servor;
+int cmd_create(teams_t *server, client_t *client, char *args) {
+  (void)server;
   (void)client;
   (void)args;
   return 0;
 }
 
-int cmd_list(teams_t *servor, client_t *client, char *args) {
-  (void)servor;
+int cmd_list(teams_t *server, client_t *client, char *args) {
+  (void)server;
   (void)client;
   (void)args;
   return 0;
 }
 
-int cmd_info(teams_t *servor, client_t *client, char *args) {
-  (void)servor;
+int cmd_info(teams_t *server, client_t *client, char *args) {
+  (void)server;
   (void)client;
   (void)args;
   return 0;
