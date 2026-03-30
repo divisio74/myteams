@@ -18,10 +18,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void cleanup_client_state(client_state_t *client_state) {
-  free(client_state->output_buffer);
-  free(client_state->user_uid);
-  memset(client_state, 0, sizeof(client_state_t));
+static void cleanup_client(client_t *client) {
+  free(client->output_buffer);
+  free(client->user_uid);
+  memset(client, 0, sizeof(client_t));
 }
 
 // return 1 if there is a pending connection, 0 if not, and -1 on error
@@ -40,7 +40,7 @@ int has_pending_connection(int fd, int timeout_ms) {
   return 0;
 }
 
-static int locate_available_socket(int fd, client_state_t *clientFds,
+static int locate_available_socket(int fd, client_t *clientFds,
                                    int *client_fd) {
   struct sockaddr_in client;
   socklen_t len = sizeof(client);
@@ -62,7 +62,7 @@ static int locate_available_socket(int fd, client_state_t *clientFds,
   return idx;
 }
 
-static int handle_pending_client_connection(int fd, client_state_t *clientFds,
+static int handle_pending_client_connection(int fd, client_t *clientFds,
                                             struct pollfd *poll_fds,
                                             int has_client) {
   int idx;
@@ -76,13 +76,14 @@ static int handle_pending_client_connection(int fd, client_state_t *clientFds,
       return -1;
     send_simple_response(client_fd, 220);
     clientFds[idx].in_use = true;
+    clientFds[idx].client_fd = client_fd;
     poll_fds[idx].fd = client_fd;
     poll_fds[idx].events = POLLIN;
   }
   return has_pending_connection(fd, 0);
 }
 
-int accept_new_client(int fd, client_state_t *clientFds,
+int accept_new_client(int fd, client_t *clientFds,
                       struct pollfd *poll_fds) {
   int has_client;
 
@@ -97,9 +98,8 @@ int accept_new_client(int fd, client_state_t *clientFds,
 }
 
 // buffer et bytes_read sont temporaires
-static void process_received_data(client_state_t *client, const char *buffer,
-                                  ssize_t bytes_read, int client_fd,
-                                  teams_t *servor) {
+static void process_received_data(client_t *client, const char *buffer,
+                                  ssize_t bytes_read, teams_t *servor) {
   char *instruction = NULL;
 
   instruction = malloc((bytes_read + 1) * sizeof(char));
@@ -109,18 +109,17 @@ static void process_received_data(client_state_t *client, const char *buffer,
   }
   strncpy(instruction, buffer, bytes_read);
   instruction[bytes_read] = '\0';
-  bufferise_client_operations(servor, client, instruction, client_fd);
+  bufferise_client_operations(servor, client, instruction);
   free(instruction);
 }
 
-static int process_event(client_state_t *clientFds, struct pollfd *poll_fds,
+static int process_event(client_t *clientFds, struct pollfd *poll_fds,
                          size_t index, char *buffer, teams_t *servor) {
   ssize_t bytes_read;
 
-  bytes_read = read(poll_fds[index].fd, buffer, sizeof(char) * 1024);
+  bytes_read = read(clientFds[index].client_fd, buffer, sizeof(char) * 1024);
   if (bytes_read > 0) {
-    process_received_data(&clientFds[index], buffer, bytes_read,
-                          poll_fds[index].fd, servor);
+    process_received_data(&clientFds[index], buffer, bytes_read, servor);
     return 0;
   }
   if (bytes_read == 0) {
@@ -133,7 +132,7 @@ static int process_event(client_state_t *clientFds, struct pollfd *poll_fds,
   return -1;
 }
 
-int handle_client_events(teams_t *team, client_state_t *clientFds,
+int handle_client_events(teams_t *team, client_t *clientFds,
                          struct pollfd *poll_fds) {
   char buffer[1024];
   int process_status;
@@ -145,7 +144,7 @@ int handle_client_events(teams_t *team, client_state_t *clientFds,
     if (clientFds[i].in_use == false || process_status == -1) {
       close(poll_fds[i].fd);
       memset(&poll_fds[i], 0, sizeof(struct pollfd));
-      cleanup_client_state(&clientFds[i]);
+      cleanup_client(&clientFds[i]);
     }
   }
   return 0;

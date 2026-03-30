@@ -43,17 +43,17 @@ int send_simple_response(int client_fd, int code)
     return 0;
 }
 
-int call_operation(teams_t *servor, client_state_t *client_state,
-    char *operation, char *args, int client_fd)
+int call_operation(teams_t *servor, client_t *client,
+    char *operation, char *args)
 {
     if (!operation)
-        return send_simple_response(client_fd, -1);
+        return send_simple_response(client->client_fd, -1);
     for (int i = 0; i < 14; i++) {
         if (strcmp(operation_functions[i].command_name, operation) == 0)
-            return operation_functions[i].operation(servor, client_state,
-                args, client_fd);
+            return operation_functions[i].operation(servor, client,
+                args);
     }
-    return send_simple_response(client_fd, 500);
+    return send_simple_response(client->client_fd, 500);
 }
 
 char *call_help_function(char *operation)

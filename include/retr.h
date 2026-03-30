@@ -10,6 +10,6 @@
 
     #include "struct.h"
 
-int retr_transfer(client_state_t *client_state, char *args);
+int retr_transfer(client_t *client, char *args);
 
 #endif /* RETR_H */

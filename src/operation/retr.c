@@ -7,9 +7,9 @@
 
 #include "retr.h"
 
-int retr_transfer(client_state_t *client_state, char *args)
+int retr_transfer(client_t *client, char *args)
 {
-    (void)client_state;
+    (void)client;
     (void)args;
     return -1;
 }

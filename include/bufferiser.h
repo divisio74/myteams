@@ -11,7 +11,7 @@
 #include "struct.h"
 
 void split_with_space(char *input, char **operant, char **parameters);
-void bufferise_client_operations(teams_t *servor, client_state_t *client,
-                                 char *args, int client_fd);
+void bufferise_client_operations(teams_t *servor, client_t *client,
+                                 char *args);
 
 #endif /* BUFFERISER_H */

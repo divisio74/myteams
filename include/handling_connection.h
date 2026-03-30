@@ -11,9 +11,9 @@
 #include <poll.h>
 #include "struct.h"
 
-int accept_new_client(int fd, client_state_t *clientFds,
+int accept_new_client(int fd, client_t *clientFds,
                       struct pollfd *poll_fds);
-int handle_client_events(teams_t *servor, client_state_t *clientFds,
+int handle_client_events(teams_t *servor, client_t *clientFds,
                          struct pollfd *poll_fds);
 int has_pending_connection(int fd, int timeout_ms);
 

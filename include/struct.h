@@ -16,16 +16,17 @@
 
 #define MAX_SOCKET 1000
 
-typedef struct client_state_s {
+typedef struct client_s {
   char *output_buffer;
   char *user_uid;
   bool in_use;
+  int client_fd;
   char *data_ip;
-} client_state_t;
+} client_t;
 
 typedef struct teams_s teams_t;
 
-typedef int (*operation_handler_t)(teams_t *, client_state_t *, char *, int);
+typedef int (*operation_handler_t)(teams_t *, client_t *, char *);
 
 typedef struct operation_s {
   char *command_name;
@@ -47,40 +48,27 @@ typedef struct teams_s {
   linked_list_t *users;
 } teams_t;
 
-int cmd_help(teams_t *servor, client_state_t *client_state, char *args,
-             int client_fd);
-int cmd_login(teams_t *servor, client_state_t *client_state, char *args,
-              int client_fd);
-int cmd_logout(teams_t *servor, client_state_t *client_state, char *args,
-               int client_fd);
-int cmd_users(teams_t *servor, client_state_t *client_state, char *args,
-              int client_fd);
-int cmd_user(teams_t *servor, client_state_t *client_state, char *args,
-             int client_fd);
-int cmd_send(teams_t *servor, client_state_t *client_state, char *args,
-             int client_fd);
-int cmd_messages(teams_t *servor, client_state_t *client_state, char *args,
-                 int client_fd);
-int cmd_subscribe(teams_t *servor, client_state_t *client_state, char *args,
-                  int client_fd);
-int cmd_subscribed(teams_t *servor, client_state_t *client_state, char *args,
-                   int client_fd);
-int cmd_unsubscribe(teams_t *servor, client_state_t *client_state, char *args,
-                    int client_fd);
-int cmd_use(teams_t *servor, client_state_t *client_state, char *args,
-            int client_fd);
-int cmd_create(teams_t *servor, client_state_t *client_state, char *args,
-               int client_fd);
-int cmd_list(teams_t *servor, client_state_t *client_state, char *args,
-             int client_fd);
-int cmd_info(teams_t *servor, client_state_t *client_state, char *args,
-             int client_fd);
+int cmd_help(teams_t *servor, client_t *client, char *args);
+int cmd_login(teams_t *servor, client_t *client, char *args);
+int cmd_logout(teams_t *servor, client_t *client, char *args);
+int cmd_users(teams_t *servor, client_t *client, char *args);
+int cmd_user(teams_t *servor, client_t *client, char *args);
+int cmd_send(teams_t *servor, client_t *client, char *args);
+int cmd_messages(teams_t *servor, client_t *client, char *args);
+int cmd_subscribe(teams_t *servor, client_t *client, char *args);
+int cmd_subscribed(teams_t *servor, client_t *client, char *args);
+int cmd_unsubscribe(teams_t *servor, client_t *client,
+                    char *args);
+int cmd_use(teams_t *servor, client_t *client, char *args);
+int cmd_create(teams_t *servor, client_t *client, char *args);
+int cmd_list(teams_t *servor, client_t *client, char *args);
+int cmd_info(teams_t *servor, client_t *client, char *args);
 
 extern const operation_t operation_functions[14];
 extern const response_code_t response_dispatch_table[];
 
-int call_operation(teams_t *servor, client_state_t *client_state,
-                   char *operation, char *args, int client_fd);
+int call_operation(teams_t *servor, client_t *client,
+                   char *operation, char *args);
 char *call_help_function(char *operation);
 char *call_server_response(int code);
 int send_simple_response(int client_fd, int code);
