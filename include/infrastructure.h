@@ -129,6 +129,7 @@ void bufferise_client_commands(server_t *server);
 int accept_new_client(int fd, client_t *clientFds, struct pollfd *poll_fds);
 int handle_client_events(server_t *server);
 int has_pending_connection(int fd, int timeout_ms);
+int init_logger_functions(payload_cmd_t *payload_cmd);
 
 void *load(char *path);
 void *getfunction(void **handle);
