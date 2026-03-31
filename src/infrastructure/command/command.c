@@ -5,12 +5,10 @@
 ** operations.c
 */
 
-#include "struct.h"
-#include "operations_2.h"
+#include "infrastructure.h"
 #include <string.h>
-#include <unistd.h>
 
-const operation_t operation_functions[14] = {
+const command_t command_functions[14] = {
     {"/help", cmd_help, "/help: show help.\n"},
     {"/login", cmd_login, "/login [\"user_name\"]: set the user_name.\n"},
     {"/logout", cmd_logout, "/logout: disconnect client from server.\n"},
@@ -34,35 +32,29 @@ const operation_t operation_functions[14] = {
     {"/info", cmd_info, "/info: display current resource details.\n"}
 };
 
-int send_simple_response(int client_fd, int code)
+int call_command(server_t *server)
 {
-    char *response = call_server_response(code);
+    payload_cmd_t *payload_cmd = &server->payload_cmd;
 
-    if (write(client_fd, response, strlen(response)) == -1)
+    if (!payload_cmd || !payload_cmd->client)
         return -1;
-    return 0;
-}
-
-int call_operation(teams_t *teams, client_t *client,
-    char *operation, char *args)
-{
-    if (!operation)
-        return send_simple_response(client->client_fd, 500);
+    if (!payload_cmd->current_command || !*payload_cmd->current_command)
+        return send_simple_response(payload_cmd->client->client_fd, 500);
     for (int i = 0; i < 14; i++) {
-        if (strcmp(operation_functions[i].command_name, operation) == 0)
-            return operation_functions[i].operation(teams, client,
-                args);
+        if (strcmp(command_functions[i].command_name,
+            payload_cmd->current_command) == 0)
+            return command_functions[i].command(payload_cmd);
     }
-    return send_simple_response(client->client_fd, 500);
+    return send_simple_response(payload_cmd->client->client_fd, 500);
 }
 
-char *call_help_function(char *operation)
+char *call_help_command(char *command)
 {
     for (int i = 0; i < 14; i++) {
-        if (!operation)
+        if (!command)
             continue;
-        if (strcmp(operation_functions[i].command_name, operation) == 0)
-            return operation_functions[i].description;
+        if (strcmp(command_functions[i].command_name, command) == 0)
+            return command_functions[i].description;
     }
     return NULL;
 }

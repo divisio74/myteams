@@ -5,11 +5,7 @@
 ** main.c
 */
 
-#include "handling_connection.h"
-#include "operations_2.h"
-#include "server_function.h"
-#include "socket.h"
-#include "struct.h"
+#include "infrastructure.h"
 #include <errno.h>
 #include <poll.h>
 #include <stdio.h>
@@ -34,8 +30,7 @@ static int main_boucle(int fd, server_t *server) {
             strerror(errno));
     return -1;
   }
-  if (handle_client_events(&server->teams, server->client_fds,
-                           server->poll_fds) == -1)
+  if (handle_client_events(server) == -1)
     return -1;
   return 0;
 }
@@ -53,7 +48,7 @@ static int run_server(int port) {
     server_free(&server);
     return 84;
   }
-  while (1) {
+  while (true) {
     if (main_boucle(fd, &server) == -1) {
       break;
     }

@@ -5,7 +5,7 @@
 ** error_msg.c
 */
 
-#include "struct.h"
+#include "infrastructure.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

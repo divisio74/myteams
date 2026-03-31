@@ -6,7 +6,7 @@
 */
 
 #include <stdio.h>
-#include "loader.h"
+#include "infrastructure.h"
 
 void *load(char *path)
 {
@@ -24,7 +24,7 @@ void *load(char *path)
     return handle;
 }
 
-void *getfunction(void **handle)
+void *getfunction_by_name(void **handle, const char *function_name)
 {
     void *my_entry_point = NULL;
     const char *error = NULL;
@@ -33,8 +33,12 @@ void *getfunction(void **handle)
         fprintf(stderr, "Error finding symbol: invalid handle\n");
         return NULL;
     }
+    if (!function_name || function_name[0] == '\0') {
+        fprintf(stderr, "Error finding symbol: empty symbol name\n");
+        return NULL;
+    }
     dlerror();
-    my_entry_point = dlsym(*handle, FUNCTION_GET_LIB);
+    my_entry_point = dlsym(*handle, function_name);
     error = dlerror();
     if (error != NULL) {
         fprintf(stderr, "Error finding symbol: %s\n", error);
@@ -43,6 +47,11 @@ void *getfunction(void **handle)
         return NULL;
     }
     return my_entry_point;
+}
+
+void *getfunction(void **handle)
+{
+    return getfunction_by_name(handle, FUNCTION_GET_LIB);
 }
 
 void unload(void *handle)

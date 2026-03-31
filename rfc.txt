@@ -4,75 +4,84 @@ Description:
 When the server accepts a new client connection, it sends a welcome response.
 
 Response:
-220 Service ready for new user
+220 Service ready for new user. [CRLF]
 
 --------------------------------------------------
 
 2. Commands
 
-2.1 LOGIN
+2.1 /login
 
 Description:
 Authenticate a user and return its UID.
 
 Request:
-LOGIN <username>
+/login <username> [CRLF]
 
 Response:
-200 <uid>
+200 <uid> [CRLF]
 
 Errors:
-500 Internal server error
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
 
 --------------------------------------------------
 
-2.2 LOGOUT
+2.2 /logout
 
 Description:
 Logout the current user.
 
 Request:
-LOGOUT
+/logout [CRLF]
 
 Response:
-200 <uid>
+200 <uid> [CRLF]
 
 Errors:
-300 User not logged in
-500 Internal server error
+300 User not logged in [CRLF]
+500 Internal server error [CRLF]
 
 --------------------------------------------------
 
-2.3 USERS
+2.3 /users
 
 Description:
 List all users.
 
 Request:
-USERS
+/users [CRLF]
 
 Response:
 200 [
   <username1> <uid1>,
   <username2> <uid2>
-]
+] [CRLF]
 
 Errors:
-500 Internal server error
+500 Internal server error [CRLF]
 
 --------------------------------------------------
 
-2.4 USER
+2.4 /user
 
 Description:
 Get information about a specific user.
 
 Request:
-USER <username>
+/user <uid> [CRLF]
 
 Response:
-200 <username> <uid>
+200 <username> <uid> [CRLF]
 
 Errors:
-400 User not found
-500 Internal server error
+400 User not found [CRLF]
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
+3. End of line rule
+
+All messages exchanged between client and server are terminated by CRLF.
+That means every request and every response must end with: \r\n (shown as [CRLF] above).

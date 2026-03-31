@@ -7,8 +7,7 @@
 
 #include "mylist.h"
 #include "mylistl.h"
-#include "teams_function.h"
-#include "user_function.h"
+#include "job_logic.h"
 #include <stdlib.h>
 #include <string.h>
 

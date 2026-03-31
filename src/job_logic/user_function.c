@@ -5,7 +5,8 @@
 ** user_function.c
 */
 
-#include "user_function.h"
+#include "job_logic.h"
+#include "mylistl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,6 +65,21 @@ user_t *init_user(const char *name) {
     free(user);
     return NULL;
   }
+  return user;
+}
+
+user_t *find_or_create_user(teams_t *teams, const char *name) {
+  user_t *user = NULL;
+
+  if (!teams || !teams->users || !name)
+    return NULL;
+  user = my_find_node(teams->users, (void *)name, compare_user_name);
+  if (user)
+    return user;
+  user = init_user(name);
+  if (!user)
+    return NULL;
+  add_node(teams->users, user);
   return user;
 }
 

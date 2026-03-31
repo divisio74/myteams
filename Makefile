@@ -7,16 +7,17 @@
 
 CC = clang
 
-SRCC = src/bufferiser.c \
-	src/loader.c \
+SRCC = src/infrastructure/bufferiser.c \
+	src/infrastructure/loader.c \
+	src/infrastructure/logger_functions.c \
 	src/main.c \
-	src/server_function.c \
-	src/socket.c \
-	src/teams_function.c \
-	src/utils.c \
-	src/user_function.c \
-	$(wildcard src/operation/*.c) \
-	$(wildcard src/control_socket/*.c) \
+	src/infrastructure/server_function.c \
+	src/job_logic/teams_function.c \
+	src/infrastructure/utils.c \
+	src/job_logic/user_function.c \
+	$(wildcard src/job_logic/job_command*.c) \
+	$(wildcard src/infrastructure/command/*.c) \
+	$(wildcard src/infrastructure/socket/*.c) \
 
 OBJC := $(SRCC:.c=.o)
 
@@ -44,6 +45,7 @@ $(LINKED_LIST_LIB):
 clean:
 	$(MAKE) -C $(LINKED_LIST_DIR) clean
 	rm -f $(OBJC)
+	find src -type f -name "*.o" -delete
 
 fclean: clean
 	$(MAKE) -C $(LINKED_LIST_DIR) fclean

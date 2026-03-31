@@ -5,9 +5,7 @@
 ** handling_connection.c
 */
 
-#include "handling_connection.h"
-#include "bufferiser.h"
-#include "operations_2.h"
+#include "infrastructure.h"
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
@@ -98,8 +96,8 @@ int accept_new_client(int fd, client_t *clientFds,
 }
 
 // buffer et bytes_read sont temporaires
-static void process_received_data(client_t *client, const char *buffer,
-                                  ssize_t bytes_read, teams_t *teams) {
+static void process_received_data(client_t *client, ssize_t bytes_read,
+                                  server_t *server) {
   char *instruction = NULL;
 
   instruction = malloc((bytes_read + 1) * sizeof(char));
@@ -107,19 +105,24 @@ static void process_received_data(client_t *client, const char *buffer,
     fprintf(stderr, "Erreur: Impossible d'allouer la mémoire.\n");
     return;
   }
-  strncpy(instruction, buffer, bytes_read);
+  strncpy(instruction, server->buffer, bytes_read);
   instruction[bytes_read] = '\0';
-  bufferise_client_operations(teams, client, instruction);
+  server->payload_cmd.client = client;
+  server->payload_cmd.args = instruction;
+  bufferise_client_commands(server);
+  server->payload_cmd.args = NULL;
   free(instruction);
 }
 
-static int process_event(client_t *clientFds, struct pollfd *poll_fds,
-                         size_t index, char *buffer, teams_t *teams) {
+static int process_event(server_t *server, size_t index) {
+  client_t *clientFds = server->client_fds;
+  struct pollfd *poll_fds = server->poll_fds;
   ssize_t bytes_read;
 
-  bytes_read = read(clientFds[index].client_fd, buffer, sizeof(char) * 1024);
+  bytes_read =
+      read(clientFds[index].client_fd, server->buffer, sizeof(server->buffer));
   if (bytes_read > 0) {
-    process_received_data(&clientFds[index], buffer, bytes_read, teams);
+    process_received_data(&clientFds[index], bytes_read, server);
     return 0;
   }
   if (bytes_read == 0) {
@@ -132,15 +135,15 @@ static int process_event(client_t *clientFds, struct pollfd *poll_fds,
   return -1;
 }
 
-int handle_client_events(teams_t *teams, client_t *clientFds,
-                         struct pollfd *poll_fds) {
-  char buffer[1024];
+int handle_client_events(server_t *server) {
+  client_t *clientFds = server->client_fds;
+  struct pollfd *poll_fds = server->poll_fds;
   int process_status;
 
   for (size_t i = 0; i < MAX_SOCKET; i++) {
     if (!clientFds[i].in_use || !(poll_fds[i].revents & POLLIN))
       continue;
-    process_status = process_event(clientFds, poll_fds, i, buffer, teams);
+    process_status = process_event(server, i);
     if (clientFds[i].in_use == false || process_status == -1) {
       close(poll_fds[i].fd);
       memset(&poll_fds[i], 0, sizeof(struct pollfd));
