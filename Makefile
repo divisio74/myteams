@@ -5,31 +5,22 @@
 ## Makefile
 ##
 
-CCX = clang++
 CC = clang
 
-SRC = $(wildcard src/*.cpp) \
-
-SRCC = src/bufferiser.c \
+SRCC = src/infrastructure/bufferiser.c \
+	src/infrastructure/loader.c \
+	src/infrastructure/logger_functions.c \
 	src/main.c \
-	src/socket.c \
-	src/utils.c \
-	src/user_function.c \
-	$(wildcard src/operation/*.c) \
-	$(wildcard src/control_socket/*.c) \
+	src/infrastructure/server_function.c \
+	src/job_logic/teams_function.c \
+	src/infrastructure/utils.c \
+	src/job_logic/user_function.c \
+	$(wildcard src/job_logic/job_command*.c) \
+	$(wildcard src/infrastructure/command/*.c) \
+	$(wildcard src/infrastructure/socket/*.c) \
 
-SRCTEST = $(wildcard tests/test_*.c)
-SRCC_TEST = $(filter-out src/main.c,$(SRCC))
-CLIENT_TEST_SRC = tests/client_test.c
-
-
-OBJ := $(SRC:.cpp=.o)
 OBJC := $(SRCC:.c=.o)
-OBJC_TEST := $(SRCC_TEST:.c=.o)
 
-OBJTEST := $(SRCTEST:.c=.o)
-
-CXXFLAGS = -std=c++20 -g3 -Wall -Wextra -Werror
 CFLAGS = -g3 -Wall -Wextra -Werror
 
 CPPFLAGS = -I include/
@@ -39,16 +30,13 @@ CPPFLAGS += -I $(LINKED_LIST_DIR)/include
 
 NAME = myteams_server
 
-TESTFOLDER = tests
-
-TESTNAME = unit_tests
-CLIENT_TEST_NAME = client_test
-CLI_TEST_SCRIPT = clii/run_cli_tests.sh
+SIMPLE_SCENARIO_SRC = tests/simple_login_logout_client.c
+SIMPLE_SCENARIO_BIN = simple_login_logout
 
 all: $(NAME)
 
-$(NAME): $(LINKED_LIST_LIB) $(OBJ) $(OBJC)
-	$(CCX) -o $(NAME) $(OBJ) $(OBJC) $(LINKED_LIST_LIB) $(CXXFLAGS)
+$(NAME): $(LINKED_LIST_LIB) $(OBJC)
+	$(CC) -o $(NAME) $(OBJC) $(LINKED_LIST_LIB) $(CFLAGS)
 
 $(LINKED_LIST_LIB):
 	$(MAKE) -C $(LINKED_LIST_DIR)
@@ -56,18 +44,21 @@ $(LINKED_LIST_LIB):
 
 clean:
 	$(MAKE) -C $(LINKED_LIST_DIR) clean
-	rm -f $(OBJ) $(OBJC) $(OBJTEST)
+	rm -f $(OBJC)
+	find src -type f -name "*.o" -delete
 
 fclean: clean
 	$(MAKE) -C $(LINKED_LIST_DIR) fclean
-	rm -f $(NAME) $(TESTNAME) $(CLIENT_TEST_NAME)
+	rm -f $(NAME) $(SIMPLE_SCENARIO_BIN)
 
 re: fclean all
 
-%.o: %.cpp
-	$(CCX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS)
+$(SIMPLE_SCENARIO_BIN): $(SIMPLE_SCENARIO_SRC)
+	$(CC) -o $(SIMPLE_SCENARIO_BIN) $(SIMPLE_SCENARIO_SRC) $(CFLAGS)
+
+scenario-login-logout: $(SIMPLE_SCENARIO_BIN)
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-.PHONY: all clean fclean re test test-client test-cli
+.PHONY: all clean fclean re scenario-login-logout
