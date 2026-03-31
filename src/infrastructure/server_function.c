@@ -49,7 +49,7 @@ static int load_server_logger(server_t *server, char *path)
     return 0;
 }
 
-static int initialize_server_resources(server_t *server)
+static int init_server_resources(server_t *server)
 {
     if (allocate_server_arrays(server) == -1)
         return -1;
@@ -61,7 +61,7 @@ static int initialize_server_resources(server_t *server)
     return 0;
 }
 
-static int initialize_logger_bindings(server_t *server)
+int init_logger(server_t *server)
 {
     server->payload_cmd.logger = server->logger;
     if (init_logger_functions(&server->payload_cmd) == -1)
@@ -69,27 +69,17 @@ static int initialize_logger_bindings(server_t *server)
     return 0;
 }
 
-static void rollback_server_init(server_t *server)
-{
-    unload(server->logger);
-    teams_free(&server->teams);
-    free_server_allocations(server);
-    server->logger = NULL;
-}
-
 int server_init(server_t *server, char *path)
 {
     if (!server)
         return -1;
     memset(server, 0, sizeof(*server));
-    if (initialize_server_resources(server) == -1)
+    if (init_server_resources(server) == -1)
         return -1;
     if (load_server_logger(server, path) == -1) {
-        rollback_server_init(server);
         return -1;
     }
-    if (initialize_logger_bindings(server) == -1) {
-        rollback_server_init(server);
+    if (init_logger(server) == -1) {
         return -1;
     }
     return 0;
@@ -104,8 +94,4 @@ void server_free(server_t *server)
     free(server->client_fds);
     free(server->poll_fds);
     free(server->payload_cmd.logger_functions);
-    server->logger = NULL;
-    server->client_fds = NULL;
-    server->poll_fds = NULL;
-    server->payload_cmd.logger_functions = NULL;
 }

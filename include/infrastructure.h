@@ -137,7 +137,6 @@ void unload(void *handle);
 
 int server_init(server_t *server, char *path);
 void server_free(server_t *server);
-int init_logger_functions(payload_cmd_t *payload_cmd);
 
 int socket_bind(int fd, int port);
 int socket_initiation(int port);
