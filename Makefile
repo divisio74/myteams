@@ -30,11 +30,6 @@ CPPFLAGS += -I $(LINKED_LIST_DIR)/include
 
 NAME = myteams_server
 
-SIMPLE_SCENARIO_SRC = tests/simple_login_logout_client.c
-SIMPLE_SCENARIO_BIN = simple_login_logout
-USER_USERS_SCENARIO_SRC = tests/simple_user_users_client.c
-USER_USERS_SCENARIO_BIN = simple_user_users
-
 all: $(NAME)
 
 $(NAME): $(LINKED_LIST_LIB) $(OBJC)
@@ -51,21 +46,11 @@ clean:
 
 fclean: clean
 	$(MAKE) -C $(LINKED_LIST_DIR) fclean
-	rm -f $(NAME) $(SIMPLE_SCENARIO_BIN) $(USER_USERS_SCENARIO_BIN)
+	rm -f $(NAME)
 
 re: fclean all
-
-$(SIMPLE_SCENARIO_BIN): $(SIMPLE_SCENARIO_SRC)
-	$(CC) -o $(SIMPLE_SCENARIO_BIN) $(SIMPLE_SCENARIO_SRC) $(CFLAGS)
-
-scenario-login-logout: $(SIMPLE_SCENARIO_BIN)
-
-$(USER_USERS_SCENARIO_BIN): $(USER_USERS_SCENARIO_SRC)
-	$(CC) -o $(USER_USERS_SCENARIO_BIN) $(USER_USERS_SCENARIO_SRC) $(CFLAGS)
-
-scenario-user-users: $(USER_USERS_SCENARIO_BIN)
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-.PHONY: all clean fclean re scenario-login-logout scenario-user-users
+.PHONY: all clean fclean re
