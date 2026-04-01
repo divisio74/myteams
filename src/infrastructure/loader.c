@@ -43,7 +43,6 @@ void *getfunction_by_name(void **handle, const char *function_name)
     if (error != NULL) {
         fprintf(stderr, "Error finding symbol: %s\n", error);
         dlclose(*handle);
-        *handle = NULL;
         return NULL;
     }
     return my_entry_point;

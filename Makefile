@@ -32,6 +32,8 @@ NAME = myteams_server
 
 SIMPLE_SCENARIO_SRC = tests/simple_login_logout_client.c
 SIMPLE_SCENARIO_BIN = simple_login_logout
+USER_USERS_SCENARIO_SRC = tests/simple_user_users_client.c
+USER_USERS_SCENARIO_BIN = simple_user_users
 
 all: $(NAME)
 
@@ -49,7 +51,7 @@ clean:
 
 fclean: clean
 	$(MAKE) -C $(LINKED_LIST_DIR) fclean
-	rm -f $(NAME) $(SIMPLE_SCENARIO_BIN)
+	rm -f $(NAME) $(SIMPLE_SCENARIO_BIN) $(USER_USERS_SCENARIO_BIN)
 
 re: fclean all
 
@@ -58,7 +60,12 @@ $(SIMPLE_SCENARIO_BIN): $(SIMPLE_SCENARIO_SRC)
 
 scenario-login-logout: $(SIMPLE_SCENARIO_BIN)
 
+$(USER_USERS_SCENARIO_BIN): $(USER_USERS_SCENARIO_SRC)
+	$(CC) -o $(USER_USERS_SCENARIO_BIN) $(USER_USERS_SCENARIO_SRC) $(CFLAGS)
+
+scenario-user-users: $(USER_USERS_SCENARIO_BIN)
+
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-.PHONY: all clean fclean re scenario-login-logout
+.PHONY: all clean fclean re scenario-login-logout scenario-user-users

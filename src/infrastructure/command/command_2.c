@@ -46,12 +46,8 @@ int cmd_logout(payload_cmd_t *payload_cmd)
     status = cmd_job_logout(payload_cmd, &logged_out_uid);
     if (status != 0)
         return send_simple_response(client->client_fd, status);
-    if (!payload_cmd->logger_functions ||
-        !payload_cmd->logger_functions->server_event_user_logged_out) {
-        free(logged_out_uid);
-        return -1;
-    }
-    payload_cmd->logger_functions->server_event_user_logged_out(logged_out_uid);
+    payload_cmd->logger_functions->
+    server_event_user_logged_out(logged_out_uid);
     len = snprintf(response, sizeof(response), "200 %s\r\n", logged_out_uid);
     free(logged_out_uid);
     if (len < 0 || write(client->client_fd, response, (size_t)len) == -1)

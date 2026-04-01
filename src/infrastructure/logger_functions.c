@@ -20,16 +20,20 @@ static int load_logger_symbol(payload_cmd_t *payload_cmd,
 static int init_logger_user_events(payload_cmd_t *payload_cmd,
     logger_functions_t *fns)
 {
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_user_subscribed,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_user_subscribed,
         "server_event_user_subscribed") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_user_unsubscribed,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_user_unsubscribed,
         "server_event_user_unsubscribed") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_user_created,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_user_created,
         "server_event_user_created") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_user_loaded,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_user_loaded,
         "server_event_user_loaded") == -1)
         return -1;
     return 0;
@@ -38,10 +42,12 @@ static int init_logger_user_events(payload_cmd_t *payload_cmd,
 static int init_logger_session_events(payload_cmd_t *payload_cmd,
     logger_functions_t *fns)
 {
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_user_logged_in,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_user_logged_in,
         "server_event_user_logged_in") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_user_logged_out,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_user_logged_out,
         "server_event_user_logged_out") == -1)
         return -1;
     if (load_logger_symbol(payload_cmd,
@@ -54,16 +60,20 @@ static int init_logger_session_events(payload_cmd_t *payload_cmd,
 static int init_logger_structure_events(payload_cmd_t *payload_cmd,
     logger_functions_t *fns)
 {
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_team_created,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_team_created,
         "server_event_team_created") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_channel_created,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_channel_created,
         "server_event_channel_created") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_thread_created,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_thread_created,
         "server_event_thread_created") == -1)
         return -1;
-    if (load_logger_symbol(payload_cmd, (void **)&fns->server_event_reply_created,
+    if (load_logger_symbol(payload_cmd,
+        (void **)&fns->server_event_reply_created,
         "server_event_reply_created") == -1)
         return -1;
     return 0;

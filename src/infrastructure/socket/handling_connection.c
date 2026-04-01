@@ -16,30 +16,32 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void cleanup_client(client_t *client) {
-  free(client->output_buffer);
-  free(client->user_uid);
-  memset(client, 0, sizeof(client_t));
+static void cleanup_client(client_t *client)
+{
+    free(client->output_buffer);
+    free(client->user_uid);
+    memset(client, 0, sizeof(client_t));
 }
 
 // return 1 if there is a pending connection, 0 if not, and -1 on error
-int has_pending_connection(int fd, int timeout_ms) {
-  struct pollfd pfd;
+int has_pending_connection(int fd, int timeout_ms)
+{
+    struct pollfd pfd;
 
-  pfd.fd = fd;
-  pfd.events = POLLIN;
-  if (poll(&pfd, 1, timeout_ms) == -1) {
-    fprintf(stderr, "Erreur: Impossible d'effectuer le poll: %s\n",
-            strerror(errno));
-    return -1;
-  }
-  if (pfd.revents & POLLIN)
-    return 1;
-  return 0;
+    pfd.fd = fd;
+    pfd.events = POLLIN;
+    if (poll(&pfd, 1, timeout_ms) == -1) {
+        fprintf(stderr, "Erreur: Impossible d'effectuer le poll: %s\n",
+                strerror(errno));
+        return -1;
+    }
+    if (pfd.revents & POLLIN)
+        return 1;
+    return 0;
 }
 
 static int locate_available_socket(int fd, client_t *clientFds,
-                                   int *client_fd)
+    int *client_fd)
 {
     struct sockaddr_in client;
     socklen_t len = sizeof(client);
@@ -47,8 +49,8 @@ static int locate_available_socket(int fd, client_t *clientFds,
 
     *client_fd = accept(fd, (struct sockaddr *)&client, &len);
     if (*client_fd == -1) {
-        fprintf(stderr, "Erreur: Impossible d'accepter la connexion client: %s\n",
-                strerror(errno));
+        fprintf(stderr, "Erreur: Impossible d'accepter"
+            "la connexion client: %s\n");
         return -1;
     }
     while (idx < MAX_SOCKET && clientFds[idx].in_use)
@@ -62,8 +64,7 @@ static int locate_available_socket(int fd, client_t *clientFds,
 }
 
 static int handle_pending_client_connection(int fd, client_t *clientFds,
-                                            struct pollfd *poll_fds,
-                                            int has_client) 
+    struct pollfd *poll_fds, int has_client)
 {
     int idx;
     int client_fd;
@@ -84,14 +85,15 @@ static int handle_pending_client_connection(int fd, client_t *clientFds,
 }
 
 int accept_new_client(int fd, client_t *clientFds,
-                      struct pollfd *poll_fds)
+    struct pollfd *poll_fds)
 {
     int has_client;
 
     has_client = has_pending_connection(fd, 0);
     while (has_client == 1) {
         has_client =
-            handle_pending_client_connection(fd, clientFds, poll_fds, has_client);
+            handle_pending_client_connection(fd, clientFds,
+                poll_fds, has_client);
         if (has_client == -1)
             return -1;
     }
@@ -100,7 +102,7 @@ int accept_new_client(int fd, client_t *clientFds,
 
 // buffer et bytes_read sont temporaires
 static void process_received_data(client_t *client, ssize_t bytes_read,
-                                  server_t *server)
+    server_t *server)
 {
     char *instruction = NULL;
 
@@ -124,8 +126,8 @@ static int process_event(server_t *server, size_t index)
     struct pollfd *poll_fds = server->poll_fds;
     ssize_t bytes_read;
 
-    bytes_read =
-        read(clientFds[index].client_fd, server->buffer, sizeof(server->buffer));
+    bytes_read = read(clientFds[index].client_fd,
+            server->buffer, sizeof(server->buffer));
     if (bytes_read > 0) {
         process_received_data(&clientFds[index], bytes_read, server);
         return 0;

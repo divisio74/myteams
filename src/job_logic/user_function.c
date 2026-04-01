@@ -31,7 +31,7 @@ int compare_user_name(void *user_data, void *name_data)
     if (!user || !name || !user->name)
         return 0;
     if (strcmp(user->name, name) == 0)
-      return 1;
+        return 1;
     return 0;
 }
 
@@ -55,8 +55,8 @@ user_t *init_user(const char *name)
     user_t *user = malloc(sizeof(user_t));
 
     if (!user) {
-      fprintf(stderr, "Error: Failed to allocate memory for user\n");
-      return NULL;
+        fprintf(stderr, "Error: Failed to allocate memory for user\n");
+        return NULL;
     }
     user->name = NULL;
     user->uid = NULL;
