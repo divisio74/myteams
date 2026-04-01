@@ -50,7 +50,7 @@ static int locate_available_socket(int fd, client_t *clientFds,
     *client_fd = accept(fd, (struct sockaddr *)&client, &len);
     if (*client_fd == -1) {
         fprintf(stderr, "Erreur: Impossible d'accepter"
-            "la connexion client: %s\n");
+            "la connexion client\n");
         return -1;
     }
     while (idx < MAX_SOCKET && clientFds[idx].in_use)

@@ -49,8 +49,4 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
-
-%.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
-
 .PHONY: all clean fclean re
