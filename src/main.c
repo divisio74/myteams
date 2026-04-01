@@ -29,7 +29,7 @@ static int main_boucle(int fd, server_t *server)
         return -1;
     if (poll(server->poll_fds, MAX_SOCKET, 0) == -1) {
         fprintf(stderr, "Erreur: Impossible d'effectuer le poll: %s\n",
-              strerror(errno));
+            strerror(errno));
         return -1;
     }
     if (handle_client_events(server) == -1)
@@ -61,11 +61,11 @@ static int run_server(int port)
 
 static int validate_arg_count(int argc)
 {
-  if (argc != 2) {
-      fprintf(stderr, "Erreur: Nombre d'arguments invalide.\n");
-      return -1;
-  }
-  return 0;
+    if (argc != 2) {
+        fprintf(stderr, "Erreur: Nombre d'arguments invalide.\n");
+        return -1;
+    }
+    return 0;
 }
 
 int main(int argc, char **argv)

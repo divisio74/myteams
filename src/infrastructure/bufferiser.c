@@ -37,10 +37,10 @@ static void algo_loop(server_t *server, char *current_command)
 
     for (size_t i = 0; args[i] != '\0'; i++) {
         if (args[i] == '\r' && args[i + 1] != '\0' && args[i + 1] == '\n') {
-          command_execution(server, current_command);
-          current_command[0] = '\0';
-          i += 1;
-          continue;
+            command_execution(server, current_command);
+            current_command[0] = '\0';
+            i += 1;
+            continue;
         }
         current_char[0] = args[i];
         current_char[1] = '\0';

@@ -6,20 +6,20 @@
 */
 
 #ifndef JOB_LOGIC_H
-#define JOB_LOGIC_H
+  #define JOB_LOGIC_H
 
-#include "mylist.h"
-#include <stdbool.h>
+  #include "mylist.h"
+  #include <stdbool.h>
 
 typedef struct payload_cmd_s payload_cmd_t;
 
 typedef struct user_s {
-  char *name;
-  char *uid;
+    char *name;
+    char *uid;
 } user_t;
 
 typedef struct teams_s {
-  linked_list_t *users;
+    linked_list_t *users;
 } teams_t;
 
 int compare_user_uid(void *user_data, void *uid_data);

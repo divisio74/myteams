@@ -48,7 +48,8 @@ int send_lougout_sucess(payload_cmd_t *payload_cmd)
         fprintf(stderr, "Error: Invalid logger in logout success\n");
         return -1;
     }
-    payload_cmd->logger_functions->server_event_user_logged_out(client->user_uid);
+    payload_cmd->logger_functions->
+    server_event_user_logged_out(client->user_uid);
     len = snprintf(response, sizeof(response), "200 %s\r\n", client->user_uid);
     if (write(client->client_fd, response, (size_t)len) == -1)
         return -1;

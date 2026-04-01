@@ -6,22 +6,22 @@
 */
 
 #ifndef INFRASTRUCTURE_H
-#define INFRASTRUCTURE_H
+    #define INFRASTRUCTURE_H
 
-#include "job_logic.h"
-#include <dlfcn.h>
-#include <poll.h>
-#include <stdbool.h>
+    #include "job_logic.h"
+    #include <dlfcn.h>
+    #include <poll.h>
+    #include <stdbool.h>
 
-#define MAX_SOCKET 1000
-#define FUNCTION_GET_LIB "get_lib"
+    #define MAX_SOCKET 1000
+    #define FUNCTION_GET_LIB "get_lib"
 
 typedef struct client_s {
-  char *output_buffer;
-  char *user_uid;
-  bool in_use;
-  int client_fd;
-  char *data_ip;
+    char *output_buffer;
+    char *user_uid;
+    bool in_use;
+    int client_fd;
+    char *data_ip;
 } client_t;
 
 typedef struct logger_functions_s logger_functions_t;
@@ -30,72 +30,72 @@ typedef struct payload_cmd_s payload_cmd_t;
 typedef int (*command_handler_t)(payload_cmd_t *);
 
 typedef struct command_s {
-  char *command_name;
-  command_handler_t command;
-  char *description;
+    char *command_name;
+    command_handler_t command;
+    char *description;
 } command_t;
 
 typedef struct response_code_s {
-  int code;
-  char *message;
+    int code;
+    char *message;
 } response_code_t;
 
 typedef struct logger_functions_s {
-  int (*server_event_team_created)(
-      char const *team_uuid,
-      char const *team_name,
-      char const *user_uuid);
-  int (*server_event_channel_created)(
-      char const *team_uuid,
-      char const *channel_uuid,
-      char const *channel_name);
-  int (*server_event_thread_created)(
-      char const *channel_uuid,
-      char const *thread_uuid,
-      char const *user_uuid,
-      char const *thread_title,
-      char const *thread_body);
-  int (*server_event_reply_created)(
-      char const *thread_uuid,
-      char const *user_uuid,
-      char const *reply_body);
-  int (*server_event_user_subscribed)(
-      char const *team_uuid,
-      char const *user_uuid);
-  int (*server_event_user_unsubscribed)(
-      char const *team_uuid,
-      char const *user_uuid);
-  int (*server_event_user_created)(
-      char const *user_uuid,
-      char const *user_name);
-  int (*server_event_user_loaded)(
-      char const *user_uuid,
-      char const *user_name);
-  int (*server_event_user_logged_in)(char const *user_uuid);
-  int (*server_event_user_logged_out)(char const *user_uuid);
-  int (*server_event_private_message_sended)(
-      char const *sender_uuid,
-      char const *receiver_uuid,
-      char const *message_body);
+    int (*server_event_team_created)(
+        char const *team_uuid,
+        char const *team_name,
+        char const *user_uuid);
+    int (*server_event_channel_created)(
+        char const *team_uuid,
+        char const *channel_uuid,
+        char const *channel_name);
+    int (*server_event_thread_created)(
+        char const *channel_uuid,
+        char const *thread_uuid,
+        char const *user_uuid,
+        char const *thread_title,
+        char const *thread_body);
+    int (*server_event_reply_created)(
+        char const *thread_uuid,
+        char const *user_uuid,
+        char const *reply_body);
+    int (*server_event_user_subscribed)(
+        char const *team_uuid,
+        char const *user_uuid);
+    int (*server_event_user_unsubscribed)(
+        char const *team_uuid,
+        char const *user_uuid);
+    int (*server_event_user_created)(
+        char const *user_uuid,
+        char const *user_name);
+    int (*server_event_user_loaded)(
+        char const *user_uuid,
+        char const *user_name);
+    int (*server_event_user_logged_in)(char const *user_uuid);
+    int (*server_event_user_logged_out)(char const *user_uuid);
+    int (*server_event_private_message_sended)(
+        char const *sender_uuid,
+        char const *receiver_uuid,
+        char const *message_body);
 } logger_functions_t;
 
 typedef struct payload_cmd_s {
-  teams_t *teams;
-  client_t *client;
-  char *args;
-  char *current_command;
-  char *parameter;
-  void *logger;
-  logger_functions_t *logger_functions;
+    teams_t *teams;
+    client_t *client;
+    char *args;
+    char *current_command;
+    char *parameter;
+    void *logger;
+    logger_functions_t *logger_functions;
 } payload_cmd_t;
 
 typedef struct server_s {
-  client_t *client_fds;
-  struct pollfd *poll_fds;
-  char buffer[1024];
-  payload_cmd_t payload_cmd;
-  void *logger;
-  teams_t teams;
+    client_t *client_fds;
+    struct pollfd *poll_fds;
+    char buffer[1024];
+    payload_cmd_t payload_cmd;
+    void *logger;
+    teams_t teams;
 } server_t;
 
 int cmd_help(payload_cmd_t *payload_cmd);
