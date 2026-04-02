@@ -33,7 +33,7 @@ NAME = myteams_server
 all: $(NAME)
 
 $(NAME): $(LINKED_LIST_LIB) $(OBJC)
-	$(CC) -o $(NAME) $(OBJC) $(LINKED_LIST_LIB) $(CFLAGS)
+	$(CC) -o $(NAME) $(OBJC) $(LINKED_LIST_LIB) $(CFLAGS) -I libs/myteams/
 
 $(LINKED_LIST_LIB):
 	$(MAKE) -C $(LINKED_LIST_DIR)
@@ -50,3 +50,6 @@ fclean: clean
 
 re: fclean all
 .PHONY: all clean fclean re
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ -I libs/myteams/
