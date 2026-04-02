@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 static const char HELP_MSG[] = "USAGE: ./myteams_server port\n";
-static const char LIB_PATH[] = "lib/libmyteams.so";
+static const char LIB_PATH[] = "libs/myteams/libmyteams.so";
 
 static int parse_command(char *port, int *port_buffer)
 {
