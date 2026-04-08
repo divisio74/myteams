@@ -49,6 +49,10 @@ team_t *init_team(const char *name, const char *description,
     const char *creator_uid);
 void free_team(void *data);
 
+message_t *init_message(const char *sender_uid, const char *receiver_uid,
+    const char *body);
+void free_message(void *data);
+
 int teams_init(teams_t *teams);
 void teams_free(teams_t *teams);
 
@@ -57,13 +61,16 @@ int cmd_job_login(payload_cmd_t *payload_cmd);
 int cmd_job_logout(payload_cmd_t *payload_cmd, char **logged_out_uid);
 int cmd_job_users(payload_cmd_t *payload_cmd, char **users_output);
 int cmd_job_user(payload_cmd_t *payload_cmd, char **user_output);
-int cmd_job_send(payload_cmd_t *payload_cmd);
-int cmd_job_messages(payload_cmd_t *payload_cmd, char **messages_output);
+int cmd_job_send(payload_cmd_t *payload_cmd, const char *receiver_uid,
+    const char *body);
+int cmd_job_messages(payload_cmd_t *payload_cmd, const char *other_uid,
+    char **messages_output);
 int cmd_job_subscribe(payload_cmd_t *payload_cmd);
 int cmd_job_subscribed(payload_cmd_t *payload_cmd);
 int cmd_job_unsubscribe(payload_cmd_t *payload_cmd);
 int cmd_job_use(payload_cmd_t *payload_cmd);
-int cmd_job_create(payload_cmd_t *payload_cmd);
+int cmd_job_create(payload_cmd_t *payload_cmd, const char *name,
+    const char *description, team_t **out_team);
 int cmd_job_list(payload_cmd_t *payload_cmd);
 int cmd_job_info(payload_cmd_t *payload_cmd);
 

@@ -39,18 +39,6 @@ static void free_list(linked_list_t *list, void (*free_data)(void *))
     }
 }
 
-static void free_message(void *data)
-{
-    message_t *msg = data;
-
-    if (!msg)
-        return;
-    free(msg->sender_uid);
-    free(msg->receiver_uid);
-    free(msg->body);
-    free(msg);
-}
-
 void teams_free(teams_t *teams)
 {
     if (!teams)
