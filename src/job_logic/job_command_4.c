@@ -16,56 +16,36 @@ int cmd_job_use(payload_cmd_t *payload_cmd)
     return 0;
 }
 
-static int parse_create_params(payload_cmd_t *payload_cmd,
-    char **name, char **description)
+static int auto_subscribe_creator(team_t *team, const char *creator_uid)
 {
-    if (!payload_cmd->parameter)
-        return 501;
-    split_with_space(payload_cmd->parameter, name, description);
-    if (!*name || !*description) {
-        free(*name);
-        return 501;
-    }
-    return 0;
-}
+    char *creator_copy = strdup(creator_uid);
 
-static int store_and_log_team(payload_cmd_t *payload_cmd,
-    const char *name, const char *description)
-{
-    team_t *team = init_team(name, description,
-        payload_cmd->client->user_uid);
-    char *creator_copy = NULL;
-
-    if (!team)
+    if (!creator_copy)
         return 500;
-    creator_copy = strdup(payload_cmd->client->user_uid);
-    if (!creator_copy) {
-        free_team(team);
-        return 500;
-    }
     add_node(team->subscribers, creator_copy);
-    add_node(payload_cmd->teams->teams, team);
-    payload_cmd->logger_functions->server_event_team_created(
-        team->uid, team->name, team->creator_uid);
-    payload_cmd->logger_functions->server_event_user_subscribed(
-        team->uid, team->creator_uid);
     return 0;
 }
 
-int cmd_job_create(payload_cmd_t *payload_cmd)
+int cmd_job_create(payload_cmd_t *payload_cmd, const char *name,
+    const char *description, team_t **out_team)
 {
-    char *name = NULL;
-    char *description = NULL;
+    team_t *team = NULL;
     int status = 0;
 
     if (!payload_cmd->client->user_uid)
         return 300;
-    status = parse_create_params(payload_cmd, &name, &description);
-    if (status != 0)
+    team = init_team(name, description, payload_cmd->client->user_uid);
+    if (!team)
+        return 500;
+    status = auto_subscribe_creator(team, payload_cmd->client->user_uid);
+    if (status != 0) {
+        free_team(team);
         return status;
-    status = store_and_log_team(payload_cmd, name, description);
-    free(name);
-    return status;
+    }
+    add_node(payload_cmd->teams->teams, team);
+    if (out_team)
+        *out_team = team;
+    return 0;
 }
 
 int cmd_job_list(payload_cmd_t *payload_cmd)

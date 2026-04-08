@@ -13,6 +13,7 @@ SRCC = src/infrastructure/bufferiser.c \
 	src/main.c \
 	src/infrastructure/server_function.c \
 	src/job_logic/teams_function.c \
+	src/job_logic/messages_function.c \
 	src/infrastructure/utils.c \
 	src/job_logic/user_function.c \
 	$(wildcard src/job_logic/job_command*.c) \
