@@ -65,9 +65,9 @@ void bufferise_client_commands(server_t *server)
     if (client->output_buffer && client->output_buffer[0] != '\0')
         strcat(current_command, client->output_buffer);
     algo_loop(server, current_command);
-    if (current_command[0] != '\0') {
-        free(client->output_buffer);
+    free(client->output_buffer);
+    client->output_buffer = NULL;
+    if (current_command[0] != '\0')
         client->output_buffer = strdup(current_command);
-    }
     free(current_command);
 }

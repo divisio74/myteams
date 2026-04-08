@@ -52,6 +52,8 @@ void free_team(void *data);
 message_t *init_message(const char *sender_uid, const char *receiver_uid,
     const char *body);
 void free_message(void *data);
+int message_is_exchange_between(message_t *msg,
+    const char *uid_a, const char *uid_b);
 
 int teams_init(teams_t *teams);
 void teams_free(teams_t *teams);
@@ -64,7 +66,7 @@ int cmd_job_user(payload_cmd_t *payload_cmd, char **user_output);
 int cmd_job_send(payload_cmd_t *payload_cmd, const char *receiver_uid,
     const char *body);
 int cmd_job_messages(payload_cmd_t *payload_cmd, const char *other_uid,
-    char **messages_output);
+    linked_list_t **out_filtered);
 int cmd_job_subscribe(payload_cmd_t *payload_cmd);
 int cmd_job_subscribed(payload_cmd_t *payload_cmd);
 int cmd_job_unsubscribe(payload_cmd_t *payload_cmd);

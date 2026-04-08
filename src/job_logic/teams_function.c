@@ -25,7 +25,7 @@ int teams_init(teams_t *teams)
     return 0;
 }
 
-static void free_list(linked_list_t *list, void (*free_data)(void *))
+static void free_node_list(linked_list_t *list, void (*free_data)(void *))
 {
     linked_list_t *current = list;
     linked_list_t *next = NULL;
@@ -43,11 +43,11 @@ void teams_free(teams_t *teams)
 {
     if (!teams)
         return;
-    free_list(teams->users, free_user);
+    free_node_list(teams->users, free_user);
     teams->users = NULL;
-    free_list(teams->messages, free_message);
+    free_node_list(teams->messages, free_message);
     teams->messages = NULL;
-    free_list(teams->teams, free_team);
+    free_node_list(teams->teams, free_team);
     teams->teams = NULL;
 }
 
@@ -107,6 +107,6 @@ void free_team(void *data)
     free(team->name);
     free(team->description);
     free(team->creator_uid);
-    free_list(team->subscribers, free);
+    free_node_list(team->subscribers, free);
     free(team);
 }

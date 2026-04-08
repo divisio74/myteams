@@ -81,6 +81,67 @@ Errors:
 
 --------------------------------------------------
 
+2.5 /send
+
+Description:
+Send a private message to another user.
+
+Request:
+/send <receiver_uid> <message_body> [CRLF]
+
+Response:
+200 [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 User not found [CRLF]
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
+2.6 /messages
+
+Description:
+List all messages exchanged between the current user and another user.
+
+Request:
+/messages <other_uid> [CRLF]
+
+Response:
+200 [
+  <sender_uid> <message_body>
+  <sender_uid> <message_body>
+] [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 User not found [CRLF]
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
+2.7 /create
+
+Description:
+Create a new team. The current user becomes the team creator and is
+automatically subscribed to the team. The server returns the uid of
+the newly created team so the client can reference it later.
+
+Request:
+/create <team_name> <team_description> [CRLF]
+
+Response:
+200 <team_uid> [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
 3. End of line rule
 
 All messages exchanged between client and server are terminated by CRLF.
