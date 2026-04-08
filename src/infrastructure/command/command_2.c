@@ -68,7 +68,7 @@ int cmd_users(payload_cmd_t *payload_cmd)
     out_len = users_output ? strlen(users_output) : 0;
     if (write(client_fd, "200 [\r\n", 7) == -1
         || (out_len > 0 && write(client_fd, users_output, out_len) == -1)
-        || write(client_fd, "\r\n]\r\n", 5) == -1) {
+        || write(client_fd, "]\r\n", 3) == -1) {
         free(users_output);
         return -1;
     }

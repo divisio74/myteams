@@ -45,31 +45,56 @@ int cmd_send(payload_cmd_t *payload_cmd)
     return send_simple_response(client_fd, 200);
 }
 
-static int write_messages_response(int client_fd, char *messages_output)
+static int write_message_line(int client_fd, message_t *msg)
 {
-    size_t out_len = messages_output ? strlen(messages_output) : 0;
+    char line[1024];
+    int len = snprintf(line, sizeof(line), "  %s %s\r\n",
+        msg->sender_uid, msg->body);
 
-    if (write(client_fd, "200 [\r\n", 7) == -1
-        || (out_len > 0 && write(client_fd, messages_output, out_len) == -1)
-        || write(client_fd, "\r\n]\r\n", 5) == -1)
+    if (len < 0 || write(client_fd, line, (size_t)len) == -1)
         return -1;
     return 0;
+}
+
+static int write_filtered_messages(int client_fd, linked_list_t *filtered)
+{
+    if (write(client_fd, "200 [\r\n", 7) == -1)
+        return -1;
+    for (linked_list_t *node = filtered; node && node->data;
+            node = node->next) {
+        if (write_message_line(client_fd, node->data) == -1)
+            return -1;
+    }
+    if (write(client_fd, "]\r\n", 3) == -1)
+        return -1;
+    return 0;
+}
+
+static void free_filtered_list(linked_list_t *filtered)
+{
+    linked_list_t *current = filtered;
+    linked_list_t *next = NULL;
+
+    while (current) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
 }
 
 int cmd_messages(payload_cmd_t *payload_cmd)
 {
     int client_fd = payload_cmd->client->client_fd;
-    char *messages_output = NULL;
+    linked_list_t *filtered = NULL;
     int status = 0;
 
     if (!payload_cmd->parameter)
         return send_simple_response(client_fd, 501);
-    status = cmd_job_messages(payload_cmd, payload_cmd->parameter,
-        &messages_output);
+    status = cmd_job_messages(payload_cmd, payload_cmd->parameter, &filtered);
     if (status != 0)
         return send_simple_response(client_fd, status);
-    status = write_messages_response(client_fd, messages_output);
-    free(messages_output);
+    status = write_filtered_messages(client_fd, filtered);
+    free_filtered_list(filtered);
     return status;
 }
 

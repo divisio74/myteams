@@ -39,3 +39,14 @@ void free_message(void *data)
     free(msg->body);
     free(msg);
 }
+
+int message_is_exchange_between(message_t *msg,
+    const char *uid_a, const char *uid_b)
+{
+    if (!msg || !msg->sender_uid || !msg->receiver_uid || !uid_a || !uid_b)
+        return 0;
+    return (strcmp(msg->sender_uid, uid_a) == 0
+        && strcmp(msg->receiver_uid, uid_b) == 0)
+        || (strcmp(msg->sender_uid, uid_b) == 0
+        && strcmp(msg->receiver_uid, uid_a) == 0);
+}

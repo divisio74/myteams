@@ -53,17 +53,19 @@ int cmd_job_users(payload_cmd_t *payload_cmd, char **users_output)
 
     buffer[0] = '\0';
     for (linked_list_t *node = payload_cmd->teams->users;
-            node; node = node->next) {
+            node && node->data; node = node->next) {
         user = node->data;
-        if (!user || !user->uid || !user->name)
+        if (!user->uid || !user->name)
             return 500;
         strcat(buffer, "  ");
         strcat(buffer, user->name);
         strcat(buffer, " ");
         strcat(buffer, user->uid);
+        strcat(buffer, "\r\n");
     }
-    strcat(buffer, " \r\n");
     *users_output = strdup(buffer);
+    if (!*users_output)
+        return 500;
     return 0;
 }
 

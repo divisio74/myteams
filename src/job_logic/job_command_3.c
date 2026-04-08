@@ -30,46 +30,24 @@ int cmd_job_send(payload_cmd_t *payload_cmd, const char *receiver_uid,
     return 0;
 }
 
-static int is_exchange_between(message_t *msg,
-    const char *uid_a, const char *uid_b)
-{
-    return (strcmp(msg->sender_uid, uid_a) == 0
-        && strcmp(msg->receiver_uid, uid_b) == 0)
-        || (strcmp(msg->sender_uid, uid_b) == 0
-        && strcmp(msg->receiver_uid, uid_a) == 0);
-}
-
-static void message_builder(char *buffer, message_t *msg)
-{
-    strcat(buffer, "  ");
-    strcat(buffer, msg->sender_uid);
-    strcat(buffer, " ");
-    strcat(buffer, msg->body);
-    strcat(buffer, "\r\n");
-}
-
-static int build_messages_buffer(linked_list_t *messages,
-    const char *uid_a, const char *uid_b, char *buffer)
+static void filter_exchange(linked_list_t *messages,
+    const char *uid_a, const char *uid_b, linked_list_t *out)
 {
     message_t *msg = NULL;
 
-    buffer[0] = '\0';
-    for (linked_list_t *node = messages; node; node = node->next) {
+    for (linked_list_t *node = messages; node && node->data;
+            node = node->next) {
         msg = node->data;
-        if (!msg)
-            return 500;
-        if (is_exchange_between(msg, uid_a, uid_b))
-            message_builder(buffer, msg);
+        if (message_is_exchange_between(msg, uid_a, uid_b))
+            add_node(out, msg);
     }
-    return 0;
 }
 
 int cmd_job_messages(payload_cmd_t *payload_cmd, const char *other_uid,
-    char **messages_output)
+    linked_list_t **out_filtered)
 {
     user_t *other = NULL;
-    char buffer[4048];
-    int status = 0;
+    linked_list_t *filtered = NULL;
 
     if (!payload_cmd->client->user_uid)
         return 300;
@@ -77,13 +55,12 @@ int cmd_job_messages(payload_cmd_t *payload_cmd, const char *other_uid,
         compare_user_uid);
     if (!other)
         return 400;
-    status = build_messages_buffer(payload_cmd->teams->messages,
-        payload_cmd->client->user_uid, other->uid, buffer);
-    if (status != 0)
-        return status;
-    *messages_output = strdup(buffer);
-    if (!*messages_output)
+    filtered = instantiate_linked_list();
+    if (!filtered)
         return 500;
+    filter_exchange(payload_cmd->teams->messages,
+        payload_cmd->client->user_uid, other->uid, filtered);
+    *out_filtered = filtered;
     return 0;
 }
 
