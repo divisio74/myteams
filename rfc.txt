@@ -142,6 +142,76 @@ Errors:
 
 --------------------------------------------------
 
+2.8 /subscribe
+
+Description:
+Subscribe the current user to a team. If the user is already subscribed,
+the command succeeds without adding a duplicate.
+
+Request:
+/subscribe <team_uid> [CRLF]
+
+Response:
+200 [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 Team not found [CRLF]
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
+2.9 /subscribed
+
+Description:
+List subscriptions. Has two modes depending on whether a parameter is given:
+- With <team_uid>: list all users subscribed to the given team.
+- Without parameter: list all teams the current user is subscribed to.
+
+Request:
+/subscribed [CRLF]
+/subscribed <team_uid> [CRLF]
+
+Response (without parameter - list of teams):
+200 [
+  <team_uid> <team_name>
+  <team_uid> <team_name>
+] [CRLF]
+
+Response (with parameter - list of subscriber uids):
+200 [
+  <user_uid>
+  <user_uid>
+] [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 Team not found [CRLF]
+500 Internal server error [CRLF]
+
+--------------------------------------------------
+
+2.10 /unsubscribe
+
+Description:
+Unsubscribe the current user from a team. The user must be subscribed
+to the team, otherwise the command returns an error.
+
+Request:
+/unsubscribe <team_uid> [CRLF]
+
+Response:
+200 [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 Team not found or user not subscribed [CRLF]
+500 Internal server error [CRLF]
+501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
 3. End of line rule
 
 All messages exchanged between client and server are terminated by CRLF.

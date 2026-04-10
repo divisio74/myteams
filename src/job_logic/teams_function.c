@@ -63,6 +63,15 @@ int compare_team_uid(void *team_data, void *uid_data)
     return 0;
 }
 
+int compare_string(void *str_a, void *str_b)
+{
+    if (!str_a || !str_b)
+        return 0;
+    if (strcmp(str_a, str_b) == 0)
+        return 1;
+    return 0;
+}
+
 static char *generate_team_uid(void)
 {
     static size_t uid = 0;
