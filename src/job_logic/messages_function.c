@@ -55,10 +55,10 @@ int message_is_exchange_between(message_t *msg,
 
     if (!msg || !msg->sender_uid || !msg->receiver_uid || !uid_a || !uid_b)
         return 0;
-    if ( strcmp(msg->sender_uid, uid_a) == 0 &&
+    if (strcmp(msg->sender_uid, uid_a) == 0 &&
         strcmp(msg->receiver_uid, uid_b) == 0)
         a_is_sender = 1;
-    if (b_is_sender = strcmp(msg->sender_uid, uid_b) == 0
+    if (strcmp(msg->sender_uid, uid_b) == 0
         && strcmp(msg->receiver_uid, uid_a) == 0)
         b_is_sender = 1;
     result = a_is_sender || b_is_sender;
