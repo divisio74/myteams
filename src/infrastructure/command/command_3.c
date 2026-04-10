@@ -25,26 +25,6 @@ static int parse_send_params(payload_cmd_t *payload_cmd,
     return 0;
 }
 
-int cmd_send(payload_cmd_t *payload_cmd)
-{
-    int client_fd = payload_cmd->client->client_fd;
-    char *operant = NULL;
-    char *parameters = NULL;
-    int status = 0;
-
-    status = parse_send_params(payload_cmd, &operant, &parameters);
-    if (status != 0)
-        return send_simple_response(client_fd, status);
-    status = cmd_job_send(payload_cmd, operant, parameters);
-    if (status == 0)
-        payload_cmd->logger_functions->server_event_private_message_sended(
-            payload_cmd->client->user_uid, operant, parameters);
-    free(operant);
-    if (status != 0)
-        return send_simple_response(client_fd, status);
-    return send_simple_response(client_fd, 200);
-}
-
 static int write_message_line(int client_fd, message_t *msg)
 {
     char line[1024];
@@ -82,6 +62,26 @@ static void free_filtered_list(linked_list_t *filtered)
     }
 }
 
+int cmd_send(payload_cmd_t *payload_cmd)
+{
+    int client_fd = payload_cmd->client->client_fd;
+    char *operant = NULL;
+    char *parameters = NULL;
+    int status = 0;
+
+    status = parse_send_params(payload_cmd, &operant, &parameters);
+    if (status != 0)
+        return send_simple_response(client_fd, status);
+    status = cmd_job_send(payload_cmd, operant, parameters);
+    if (status == 0)
+        payload_cmd->logger_functions->server_event_private_message_sended(
+            payload_cmd->client->user_uid, operant, parameters);
+    free(operant);
+    if (status != 0)
+        return send_simple_response(client_fd, status);
+    return send_simple_response(client_fd, 200);
+}
+
 int cmd_messages(payload_cmd_t *payload_cmd)
 {
     int client_fd = payload_cmd->client->client_fd;
@@ -98,20 +98,3 @@ int cmd_messages(payload_cmd_t *payload_cmd)
     return status;
 }
 
-int cmd_subscribe(payload_cmd_t *payload_cmd)
-{
-    (void)payload_cmd;
-    return 0;
-}
-
-int cmd_subscribed(payload_cmd_t *payload_cmd)
-{
-    (void)payload_cmd;
-    return 0;
-}
-
-int cmd_unsubscribe(payload_cmd_t *payload_cmd)
-{
-    (void)payload_cmd;
-    return 0;
-}

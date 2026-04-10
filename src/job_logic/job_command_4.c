@@ -10,12 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int cmd_job_use(payload_cmd_t *payload_cmd)
-{
-    (void)payload_cmd;
-    return 0;
-}
-
 static int auto_subscribe_creator(team_t *team, const char *creator_uid)
 {
     char *creator_copy = strdup(creator_uid);
@@ -23,6 +17,12 @@ static int auto_subscribe_creator(team_t *team, const char *creator_uid)
     if (!creator_copy)
         return 500;
     add_node(team->subscribers, creator_copy);
+    return 0;
+}
+
+int cmd_job_use(payload_cmd_t *payload_cmd)
+{
+    (void)payload_cmd;
     return 0;
 }
 

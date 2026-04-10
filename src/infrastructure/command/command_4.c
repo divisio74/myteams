@@ -11,12 +11,6 @@
 #include <string.h>
 #include <unistd.h>
 
-int cmd_use(payload_cmd_t *payload_cmd)
-{
-    (void)payload_cmd;
-    return 0;
-}
-
 static int parse_create_params(payload_cmd_t *payload_cmd,
     char **name, char **description)
 {
@@ -46,6 +40,12 @@ static int send_create_success(int client_fd, team_t *team)
 
     if (write(client_fd, response, (size_t)len) == -1)
         return -1;
+    return 0;
+}
+
+int cmd_use(payload_cmd_t *payload_cmd)
+{
+    (void)payload_cmd;
     return 0;
 }
 
