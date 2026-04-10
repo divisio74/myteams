@@ -16,9 +16,15 @@ message_t *init_message(const char *sender_uid, const char *receiver_uid,
 
     if (!msg)
         return NULL;
-    msg->sender_uid = sender_uid ? strdup(sender_uid) : NULL;
-    msg->receiver_uid = receiver_uid ? strdup(receiver_uid) : NULL;
-    msg->body = body ? strdup(body) : NULL;
+    msg->sender_uid = NULL;
+    msg->receiver_uid = NULL;
+    msg->body = NULL;
+    if (sender_uid)
+        msg->sender_uid = strdup(sender_uid);
+    if (receiver_uid)
+        msg->receiver_uid = strdup(receiver_uid);
+    if (body)
+        msg->body = strdup(body);
     if ((sender_uid && !msg->sender_uid)
         || (receiver_uid && !msg->receiver_uid)
         || (body && !msg->body)) {
@@ -43,10 +49,18 @@ void free_message(void *data)
 int message_is_exchange_between(message_t *msg,
     const char *uid_a, const char *uid_b)
 {
+    int a_is_sender = 0;
+    int b_is_sender = 0;
+    int result = 0;
+
     if (!msg || !msg->sender_uid || !msg->receiver_uid || !uid_a || !uid_b)
         return 0;
-    return (strcmp(msg->sender_uid, uid_a) == 0
-        && strcmp(msg->receiver_uid, uid_b) == 0)
-        || (strcmp(msg->sender_uid, uid_b) == 0
-        && strcmp(msg->receiver_uid, uid_a) == 0);
+    if ( strcmp(msg->sender_uid, uid_a) == 0 &&
+        strcmp(msg->receiver_uid, uid_b) == 0)
+        a_is_sender = 1;
+    if (b_is_sender = strcmp(msg->sender_uid, uid_b) == 0
+        && strcmp(msg->receiver_uid, uid_a) == 0)
+        b_is_sender = 1;
+    result = a_is_sender || b_is_sender;
+    return result;
 }
