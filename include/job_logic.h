@@ -27,7 +27,6 @@ typedef struct message_s {
 typedef struct thread_s {
   char *uid;
   linked_list_t *messages;
-  linked_list_t *users;
 } thread_t;
 
 typedef struct channel_s {
@@ -63,6 +62,14 @@ int compare_string(void *str_a, void *str_b);
 team_t *init_team(const char *name, const char *description,
     const char *creator_uid);
 void free_team(void *data);
+
+int compare_thread_uid(void *thread_data, void *uid_data);
+thread_t *init_thread(void);
+void free_thread(void *data);
+
+int compare_channel_uid(void *channel_data, void *uid_data);
+channel_t *init_channel(void);
+void free_channel(void *data);
 
 message_t *init_message(const char *sender_uid, const char *receiver_uid,
     const char *body);
