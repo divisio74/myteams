@@ -93,9 +93,15 @@ team_t *init_team(const char *name, const char *description,
     if (!team)
         return NULL;
     team->uid = generate_team_uid();
-    team->name = name ? strdup(name) : NULL;
-    team->description = description ? strdup(description) : NULL;
-    team->creator_uid = creator_uid ? strdup(creator_uid) : NULL;
+    team->name = NULL;
+    team->description = NULL;
+    team->creator_uid = NULL;
+    if (name)
+        team->name = strdup(name);
+    if (description)
+        team->description = strdup(description);
+    if (creator_uid)
+        team->creator_uid = strdup(creator_uid);
     team->subscribers = instantiate_linked_list();
     if (!team->uid || (name && !team->name)
         || (description && !team->description)
