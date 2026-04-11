@@ -46,19 +46,33 @@ void free_thread(void *data)
     if (!thread)
         return;
     free(thread->uid);
+    free(thread->name);
+    free(thread->body);
+    free(thread->creator_uid);
     free_node_list(thread->messages, free_message);
     free(thread);
 }
 
-thread_t *init_thread(void)
+thread_t *init_thread(const char *name, const char *body,
+    const char *creator_uid)
 {
     thread_t *thread = malloc(sizeof(thread_t));
 
     if (!thread)
         return NULL;
     thread->uid = generate_thread_uid();
+    thread->name = NULL;
+    thread->body = NULL;
+    thread->creator_uid = NULL;
+    if (name)
+        thread->name = strdup(name);
+    if (body)
+        thread->body = strdup(body);
+    if (creator_uid)
+        thread->creator_uid = strdup(creator_uid);
     thread->messages = instantiate_linked_list();
-    if (!thread->uid || !thread->messages) {
+    if (!thread->uid || (name && !thread->name) || (body && !thread->body)
+        || (creator_uid && !thread->creator_uid) || !thread->messages) {
         free_thread(thread);
         return NULL;
     }

@@ -46,21 +46,26 @@ void free_channel(void *data)
     if (!channel)
         return;
     free(channel->uid);
+    free(channel->name);
     free_node_list(channel->users, free);
     free_node_list(channel->threads, free_thread);
     free(channel);
 }
 
-channel_t *init_channel(void)
+channel_t *init_channel(const char *name)
 {
     channel_t *channel = malloc(sizeof(channel_t));
 
     if (!channel)
         return NULL;
     channel->uid = generate_channel_uid();
+    channel->name = NULL;
+    if (name)
+        channel->name = strdup(name);
     channel->threads = instantiate_linked_list();
     channel->users = instantiate_linked_list();
-    if (!channel->uid || !channel->threads || ! channel->users) {
+    if (!channel->uid || (name && !channel->name)
+        || !channel->threads || !channel->users) {
         free_channel(channel);
         return NULL;
     }
