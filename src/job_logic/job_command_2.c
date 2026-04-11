@@ -43,6 +43,12 @@ int cmd_job_logout(payload_cmd_t *payload_cmd, char **logged_out_uid)
         return 500;
     free(payload_cmd->client->user_uid);
     payload_cmd->client->user_uid = NULL;
+    free(payload_cmd->client->current_team_uid);
+    payload_cmd->client->current_team_uid = NULL;
+    free(payload_cmd->client->current_channel_uid);
+    payload_cmd->client->current_channel_uid = NULL;
+    free(payload_cmd->client->current_thread_uid);
+    payload_cmd->client->current_thread_uid = NULL;
     return 0;
 }
 

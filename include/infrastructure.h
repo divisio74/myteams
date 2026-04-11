@@ -22,6 +22,9 @@ typedef struct client_s {
     bool in_use;
     int client_fd;
     char *data_ip;
+    char *current_team_uid;
+    char *current_channel_uid;
+    char *current_thread_uid;
 } client_t;
 
 typedef struct logger_functions_s logger_functions_t;

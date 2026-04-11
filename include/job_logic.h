@@ -26,11 +26,15 @@ typedef struct message_s {
 
 typedef struct thread_s {
   char *uid;
+  char *name;
+  char *body;
+  char *creator_uid;
   linked_list_t *messages;
 } thread_t;
 
 typedef struct channel_s {
   char *uid;
+  char *name;
   linked_list_t *users;
   linked_list_t *threads;
 } channel_t;
@@ -64,11 +68,12 @@ team_t *init_team(const char *name, const char *description,
 void free_team(void *data);
 
 int compare_thread_uid(void *thread_data, void *uid_data);
-thread_t *init_thread(void);
+thread_t *init_thread(const char *name, const char *body,
+    const char *creator_uid);
 void free_thread(void *data);
 
 int compare_channel_uid(void *channel_data, void *uid_data);
-channel_t *init_channel(void);
+channel_t *init_channel(const char *name);
 void free_channel(void *data);
 
 message_t *init_message(const char *sender_uid, const char *receiver_uid,
@@ -94,8 +99,8 @@ int cmd_job_subscribed(payload_cmd_t *payload_cmd, const char *team_uid,
     linked_list_t **out_filtered);
 int cmd_job_unsubscribe(payload_cmd_t *payload_cmd, const char *team_uid);
 int cmd_job_use(payload_cmd_t *payload_cmd);
-int cmd_job_create(payload_cmd_t *payload_cmd, const char *name,
-    const char *description, team_t **out_team);
+int cmd_job_create(payload_cmd_t *payload_cmd, const char *arg1,
+    const char *arg2, char **out_uid);
 int cmd_job_list(payload_cmd_t *payload_cmd);
 int cmd_job_info(payload_cmd_t *payload_cmd);
 

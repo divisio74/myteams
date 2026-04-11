@@ -20,6 +20,9 @@ static void cleanup_client(client_t *client)
 {
     free(client->output_buffer);
     free(client->user_uid);
+    free(client->current_team_uid);
+    free(client->current_channel_uid);
+    free(client->current_thread_uid);
     memset(client, 0, sizeof(client_t));
 }
 

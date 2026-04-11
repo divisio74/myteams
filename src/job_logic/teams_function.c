@@ -103,9 +103,11 @@ team_t *init_team(const char *name, const char *description,
     if (creator_uid)
         team->creator_uid = strdup(creator_uid);
     team->subscribers = instantiate_linked_list();
+    team->channels = instantiate_linked_list();
     if (!team->uid || (name && !team->name)
         || (description && !team->description)
-        || (creator_uid && !team->creator_uid) || !team->subscribers) {
+        || (creator_uid && !team->creator_uid) || !team->subscribers
+        || !team->channels) {
         free_team(team);
         return NULL;
     }
@@ -123,5 +125,6 @@ void free_team(void *data)
     free(team->description);
     free(team->creator_uid);
     free_node_list(team->subscribers, free);
+    free_node_list(team->channels, free_channel);
     free(team);
 }
