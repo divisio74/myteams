@@ -64,6 +64,7 @@ thread_t *init_thread(const char *name, const char *body,
     thread->name = NULL;
     thread->body = NULL;
     thread->creator_uid = NULL;
+    thread->timestamp = time(NULL);
     if (name)
         thread->name = strdup(name);
     if (body)

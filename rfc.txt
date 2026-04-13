@@ -125,18 +125,39 @@ Errors:
 2.7 /create
 
 Description:
-Create a new team. The current user becomes the team creator and is
-automatically subscribed to the team. The server returns the uid of
-the newly created team so the client can reference it later.
+Create a sub-resource depending on the current context set by /use.
+- No context: create a team. The creator is automatically subscribed.
+- Team context: create a channel in the current team.
+- Channel context: create a thread in the current channel.
+- Thread context: create a reply (message) in the current thread.
 
-Request:
+Request (no context - create team):
 /create <team_name> <team_description> [CRLF]
 
-Response:
-200 <team_uid> [CRLF]
+Request (team context - create channel):
+/create <channel_name> <channel_description> [CRLF]
+
+Request (channel context - create thread):
+/create <thread_title> <thread_body> [CRLF]
+
+Request (thread context - create reply):
+/create <reply_body> [CRLF]
+
+Response (team created):
+200 <team_uid> <team_name> <team_description> [CRLF]
+
+Response (channel created):
+200 <channel_uid> <channel_name> <channel_description> [CRLF]
+
+Response (thread created):
+200 <thread_uid> <creator_uid> <timestamp> <thread_title> <thread_body> [CRLF]
+
+Response (reply created):
+200 <thread_uid> <creator_uid> <timestamp> <reply_body> [CRLF]
 
 Errors:
 300 User not logged in [CRLF]
+400 Team, channel or thread not found [CRLF]
 500 Internal server error [CRLF]
 501 Syntax error in parameters or arguments. [CRLF]
 
@@ -209,6 +230,100 @@ Errors:
 400 Team not found or user not subscribed [CRLF]
 500 Internal server error [CRLF]
 501 Syntax error in parameters or arguments. [CRLF]
+
+--------------------------------------------------
+
+2.11 /use
+
+Description:
+Set the client context for context-dependent commands (/create, /list, /info).
+The context determines which level of the hierarchy the client is operating on.
+Without arguments, resets the context to the root level.
+
+Request:
+/use [CRLF]
+/use <team_uid> [CRLF]
+/use <team_uid> <channel_uid> [CRLF]
+/use <team_uid> <channel_uid> <thread_uid> [CRLF]
+
+Response:
+200 [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 Team, channel or thread not found [CRLF]
+
+--------------------------------------------------
+
+2.12 /list
+
+Description:
+List sub-resources depending on the current context set by /use.
+- No context: list all teams the current user is subscribed to.
+- Team context: list all channels in the current team.
+- Channel context: list all threads in the current channel.
+- Thread context: list all messages in the current thread.
+
+Request:
+/list [CRLF]
+
+Response (teams):
+200 [
+  <team_uid> <team_name> <team_description>
+  <team_uid> <team_name> <team_description>
+] [CRLF]
+
+Response (channels):
+200 [
+  <channel_uid> <channel_name> <channel_description>
+  <channel_uid> <channel_name> <channel_description>
+] [CRLF]
+
+Response (threads):
+200 [
+  <thread_uid> <creator_uid> <timestamp> <thread_title> <thread_body>
+  <thread_uid> <creator_uid> <timestamp> <thread_title> <thread_body>
+] [CRLF]
+
+Response (replies):
+200 [
+  <thread_uid> <sender_uid> <timestamp> <reply_body>
+  <thread_uid> <sender_uid> <timestamp> <reply_body>
+] [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 Team, channel or thread not found [CRLF]
+500 Internal server error [CRLF]
+
+--------------------------------------------------
+
+2.13 /info
+
+Description:
+Display details about the current resource set by /use.
+Requires a context to be set (at least a team).
+- Team context: show team uid, name and description.
+- Channel context: show channel uid, name and description.
+- Thread context: show thread uid, creator uid, timestamp, title and body.
+
+Request:
+/info [CRLF]
+
+Response (team):
+200 <team_uid> <team_name> <team_description> [CRLF]
+
+Response (channel):
+200 <channel_uid> <channel_name> <channel_description> [CRLF]
+
+Response (thread):
+200 <thread_uid> <creator_uid> <timestamp> <thread_title> <thread_body> [CRLF]
+
+Errors:
+300 User not logged in [CRLF]
+400 Team, channel or thread not found [CRLF]
+500 Internal server error [CRLF]
+501 No context set [CRLF]
 
 --------------------------------------------------
 

@@ -10,6 +10,7 @@
 
 #include "mylist.h"
 #include <stdbool.h>
+#include <time.h>
 
 typedef struct payload_cmd_s payload_cmd_t;
 
@@ -22,6 +23,7 @@ typedef struct message_s {
   char *sender_uid;
   char *receiver_uid;
   char *body;
+  time_t timestamp;
 } message_t;
 
 typedef struct thread_s {
@@ -29,12 +31,14 @@ typedef struct thread_s {
   char *name;
   char *body;
   char *creator_uid;
+  time_t timestamp;
   linked_list_t *messages;
 } thread_t;
 
 typedef struct channel_s {
   char *uid;
   char *name;
+  char *description;
   linked_list_t *users;
   linked_list_t *threads;
 } channel_t;
@@ -73,7 +77,7 @@ thread_t *init_thread(const char *name, const char *body,
 void free_thread(void *data);
 
 int compare_channel_uid(void *channel_data, void *uid_data);
-channel_t *init_channel(const char *name);
+channel_t *init_channel(const char *name, const char *description);
 void free_channel(void *data);
 
 message_t *init_message(const char *sender_uid, const char *receiver_uid,
@@ -98,10 +102,11 @@ int cmd_job_subscribe(payload_cmd_t *payload_cmd, const char *team_uid);
 int cmd_job_subscribed(payload_cmd_t *payload_cmd, const char *team_uid,
     linked_list_t **out_filtered);
 int cmd_job_unsubscribe(payload_cmd_t *payload_cmd, const char *team_uid);
-int cmd_job_use(payload_cmd_t *payload_cmd);
+int cmd_job_use(payload_cmd_t *payload_cmd, const char *team_uid,
+    const char *channel_uid, const char *thread_uid);
 int cmd_job_create(payload_cmd_t *payload_cmd, const char *arg1,
     const char *arg2, char **out_uid);
-int cmd_job_list(payload_cmd_t *payload_cmd);
-int cmd_job_info(payload_cmd_t *payload_cmd);
+int cmd_job_list(payload_cmd_t *payload_cmd, linked_list_t **out_list);
+int cmd_job_info(payload_cmd_t *payload_cmd, char **out_info);
 
 #endif /* JOB_LOGIC_H */
