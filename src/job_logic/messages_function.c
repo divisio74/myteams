@@ -19,6 +19,7 @@ message_t *init_message(const char *sender_uid, const char *receiver_uid,
     msg->sender_uid = NULL;
     msg->receiver_uid = NULL;
     msg->body = NULL;
+    msg->timestamp = time(NULL);
     if (sender_uid)
         msg->sender_uid = strdup(sender_uid);
     if (receiver_uid)

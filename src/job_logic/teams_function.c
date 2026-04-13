@@ -12,19 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int teams_init(teams_t *teams)
-{
-    if (!teams)
-        return -1;
-    memset(teams, 0, sizeof(*teams));
-    teams->users = instantiate_linked_list();
-    teams->messages = instantiate_linked_list();
-    teams->teams = instantiate_linked_list();
-    if (!teams->users || !teams->messages || !teams->teams)
-        return -1;
-    return 0;
-}
-
 static void free_node_list(linked_list_t *list, void (*free_data)(void *))
 {
     linked_list_t *current = list;
@@ -37,18 +24,6 @@ static void free_node_list(linked_list_t *list, void (*free_data)(void *))
         free(current);
         current = next;
     }
-}
-
-void teams_free(teams_t *teams)
-{
-    if (!teams)
-        return;
-    free_node_list(teams->users, free_user);
-    teams->users = NULL;
-    free_node_list(teams->messages, free_message);
-    teams->messages = NULL;
-    free_node_list(teams->teams, free_team);
-    teams->teams = NULL;
 }
 
 int compare_team_uid(void *team_data, void *uid_data)
@@ -85,14 +60,9 @@ static char *generate_team_uid(void)
     return strdup(buffer);
 }
 
-team_t *init_team(const char *name, const char *description,
-    const char *creator_uid)
+static int init_team_strings(team_t *team, const char *name,
+    const char *description, const char *creator_uid)
 {
-    team_t *team = malloc(sizeof(team_t));
-
-    if (!team)
-        return NULL;
-    team->uid = generate_team_uid();
     team->name = NULL;
     team->description = NULL;
     team->creator_uid = NULL;
@@ -102,12 +72,31 @@ team_t *init_team(const char *name, const char *description,
         team->description = strdup(description);
     if (creator_uid)
         team->creator_uid = strdup(creator_uid);
+    if ((name && !team->name) || (description && !team->description)
+        || (creator_uid && !team->creator_uid))
+        return -1;
+    return 0;
+}
+
+static int init_team_lists(team_t *team)
+{
     team->subscribers = instantiate_linked_list();
     team->channels = instantiate_linked_list();
-    if (!team->uid || (name && !team->name)
-        || (description && !team->description)
-        || (creator_uid && !team->creator_uid) || !team->subscribers
-        || !team->channels) {
+    if (!team->subscribers || !team->channels)
+        return -1;
+    return 0;
+}
+
+team_t *init_team(const char *name, const char *description,
+    const char *creator_uid)
+{
+    team_t *team = malloc(sizeof(team_t));
+
+    if (!team)
+        return NULL;
+    team->uid = generate_team_uid();
+    if (!team->uid || init_team_strings(team, name, description,
+        creator_uid) == -1 || init_team_lists(team) == -1) {
         free_team(team);
         return NULL;
     }

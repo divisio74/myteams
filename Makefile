@@ -13,6 +13,7 @@ SRCC = src/infrastructure/bufferiser.c \
 	src/main.c \
 	src/infrastructure/server_function.c \
 	src/job_logic/teams_function.c \
+	src/job_logic/teams_function_2.c \
 	src/job_logic/messages_function.c \
 	src/job_logic/channel_function.c \
 	src/job_logic/thread_fucntion.c \
