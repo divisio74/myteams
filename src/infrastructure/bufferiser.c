@@ -36,12 +36,13 @@ static void algo_loop(server_t *server, char *current_command)
     char current_char[2];
 
     for (size_t i = 0; args[i] != '\0'; i++) {
-        if (args[i] == '\r' && args[i + 1] != '\0' && args[i + 1] == '\n') {
+        if (args[i] == '\n') {
             command_execution(server, current_command);
             current_command[0] = '\0';
-            i += 1;
             continue;
         }
+        if (args[i] == '\r')
+            continue;
         current_char[0] = args[i];
         current_char[1] = '\0';
         if (current_command && strlen(current_command) + 1 < 1024)
