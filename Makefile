@@ -30,14 +30,17 @@ CFLAGS = -g3 -Wall -Wextra -Werror
 CPPFLAGS = -I include/
 LINKED_LIST_DIR = linked_list
 LINKED_LIST_LIB = $(LINKED_LIST_DIR)/linked_list.a
+MYTEAMS_DIR = libs/myteams
+MYTEAMS_LIB = $(MYTEAMS_DIR)/libmyteams.so
 CPPFLAGS += -I $(LINKED_LIST_DIR)/include
+CPPFLAGS += -I $(MYTEAMS_DIR)
 
 NAME = myteams_server
 
 all: $(NAME)
 
-$(NAME): $(LINKED_LIST_LIB) $(OBJC)
-	$(CC) -o $(NAME) $(OBJC) $(LINKED_LIST_LIB) $(CFLAGS) -I libs/myteams/
+$(NAME): $(LINKED_LIST_LIB) $(OBJC) $(MYTEAMS_LIB)
+	$(CC) -o $(NAME) $(OBJC) $(LINKED_LIST_LIB) $(MYTEAMS_LIB) $(CFLAGS)
 
 $(LINKED_LIST_LIB):
 	$(MAKE) -C $(LINKED_LIST_DIR)
@@ -56,4 +59,4 @@ re: fclean all
 .PHONY: all clean fclean re
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ -I libs/myteams/
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
