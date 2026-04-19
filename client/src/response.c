@@ -12,12 +12,6 @@
 #include <string.h>
 #include <unistd.h>
 
-void handle_line(client_t *client, char *line)
-{
-    (void)client;
-    fprintf(stdout, "%s\n", line);
-}
-
 static void process_buffer(client_t *client)
 {
     char *newline = NULL;
@@ -71,10 +65,13 @@ static void process_stdin_line(client_t *client, const char *raw)
         free(line);
         return;
     }
-    if (strcmp(trimmed, "/help") == 0)
+    if (strcmp(trimmed, "/help") == 0) {
         print_help();
-    else
-        client_send_line(client->socket_fd, trimmed);
+        free(line);
+        return;
+    }
+    pending_update_from_input(client, trimmed);
+    client_send_line(client->socket_fd, trimmed);
     free(line);
 }
 
